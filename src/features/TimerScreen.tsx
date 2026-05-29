@@ -3,7 +3,7 @@ import { useAppStore } from '../store';
 import { useHaptics, useWakeLock } from '../hooks/mobile';
 import { sessionsService } from '../services/sessionsService';
 import { useQueryClient } from '@tanstack/react-query';
-import { X } from 'lucide-react';
+import { X, Minus, Plus as PlusIcon } from 'lucide-react';
 
 interface TimerProps {
   onBack: () => void;
@@ -19,19 +19,18 @@ export function TimerScreen({ onBack }: TimerProps) {
   const familyId = useAppStore((state) => state.familyId);
 
   const [seconds, setSeconds] = useState(0);
-  const [selectedSide, setSelectedSide] = useState<'left' | 'right'>('left');
+  const [volume, setVolume] = useState<number>(0);
   
   const { triggerHaptic } = useHaptics();
   const { requestWakeLock, releaseWakeLock } = useWakeLock();
   const queryClient = useQueryClient();
 
+  // Start timer on mount if not already active
   useEffect(() => {
-    if (activeTimer) {
-      setSelectedSide(activeTimer.side);
-    } else {
-      startTimer(selectedSide);
+    if (!activeTimer) {
+      startTimer('left'); // side doesn't matter for bottle, just need a value
     }
-  }, [activeTimer, startTimer, selectedSide]);
+  }, [activeTimer, startTimer]);
 
   useEffect(() => {
     const isPaused = activeTimer?.pausedAt;
@@ -60,21 +59,6 @@ export function TimerScreen({ onBack }: TimerProps) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleSideSwitch = (side: 'left' | 'right') => {
-    if (selectedSide === side) return;
-    triggerHaptic([10, 20]);
-    setSelectedSide(side);
-    if (activeTimer) {
-      const now = new Date().toISOString();
-      const startMs = new Date(activeTimer.startedAt).getTime();
-      const nowMs = Date.now();
-      const elapsed = Math.max(0, Math.floor((nowMs - startMs) / 1000) + activeTimer.accumulatedSeconds);
-      useAppStore.setState({
-        activeTimer: { side, startedAt: now, accumulatedSeconds: elapsed }
-      });
-    }
-  };
-
   const handlePauseToggle = () => {
     triggerHaptic(15);
     if (activeTimer?.pausedAt) { resumeTimer(); } else { pauseTimer(); }
@@ -87,12 +71,12 @@ export function TimerScreen({ onBack }: TimerProps) {
     const newSession = await sessionsService.createSession({
       id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now(),
       family_id: familyId!,
-      type: selectedSide,
-      side: selectedSide,
+      type: 'bottle',
+      side: null,
       started_at: activeTimer.startedAt,
       ended_at: new Date().toISOString(),
       duration_s: finalDuration,
-      volume_ml: null,
+      volume_ml: volume > 0 ? volume : null,
       notes: null,
       recorded_by: partnerName,
       created_at: new Date().toISOString(),
@@ -143,12 +127,12 @@ export function TimerScreen({ onBack }: TimerProps) {
         >
           <X size={20} strokeWidth={1.5} /> Cancel
         </button>
-        <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)' }}>Feeding</span>
+        <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)' }}>Bottle Feed</span>
         <div style={{ width: 80 }} />
       </div>
 
       {/* Timer Display */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32 }}>
         <p
           style={{
             fontSize: 80,
@@ -157,45 +141,34 @@ export function TimerScreen({ onBack }: TimerProps) {
             fontVariantNumeric: 'tabular-nums',
             color: 'var(--text-primary)',
             lineHeight: 1,
-            marginBottom: 32,
           }}
         >
           {formatTime(seconds)}
         </p>
 
-        {/* Side Selector */}
-        <div
-          style={{
-            display: 'flex',
-            background: 'var(--bg-surface-elevated)',
-            borderRadius: 8,
-            padding: 2,
-            width: 240,
-          }}
-        >
-          {(['left', 'right'] as const).map((side) => (
+        {/* Inline Volume Stepper */}
+        <div style={{ width: '100%', maxWidth: 280 }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center', marginBottom: 12 }}>Volume</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button
-              key={side}
-              onClick={() => handleSideSwitch(side)}
-              style={{
-                flex: 1,
-                padding: '8px 0',
-                borderRadius: 6,
-                border: 'none',
-                fontSize: 13,
-                fontWeight: selectedSide === side ? 600 : 400,
-                color: 'var(--text-primary)',
-                background: selectedSide === side ? 'var(--border-color)' : 'transparent',
-                boxShadow: selectedSide === side ? '0 1px 4px rgba(0,0,0,0.2)' : 'none',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                transition: 'all 0.2s ease',
-                textTransform: 'capitalize',
-              }}
+              type="button"
+              onClick={() => { triggerHaptic(5); setVolume((v) => Math.max(0, v - 10)); }}
+              style={{ width: 44, height: 44, borderRadius: 22, background: 'var(--bg-surface)', border: 'none', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
             >
-              {side} side
+              <Minus size={18} strokeWidth={1.5} />
             </button>
-          ))}
+            <span style={{ fontSize: 34, fontWeight: 200, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+              {volume}
+              <span style={{ fontSize: 17, fontWeight: 300, color: 'var(--text-secondary)', marginLeft: 4 }}>ml</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => { triggerHaptic(5); setVolume((v) => v + 10); }}
+              style={{ width: 44, height: 44, borderRadius: 22, background: 'var(--bg-surface)', border: 'none', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            >
+              <PlusIcon size={18} strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
       </div>
 

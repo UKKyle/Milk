@@ -92,7 +92,7 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
         </div>
       )}
 
-      {/* Last Feed Hero Card */}
+      {/* Today's Total Hero Card */}
       <div
         style={{
           background: 'var(--bg-surface)',
@@ -112,7 +112,7 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
             marginBottom: 8,
           }}
         >
-          Last Feed
+          Today
         </p>
         {isLoading ? (
           <div style={{ padding: '16px 0' }}>
@@ -128,7 +128,7 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
               }}
             />
           </div>
-        ) : lastFeed ? (
+        ) : todayCount > 0 ? (
           <>
             <p
               style={{
@@ -140,11 +140,11 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
                 marginBottom: 4,
               }}
             >
-              {getFeedTimeText(lastFeed.started_at)}
+              {todayVolume}<span style={{ fontSize: 20, fontWeight: 300, color: 'var(--text-secondary)' }}> ml</span>
             </p>
             <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
-              {getSideLabel(lastFeed)}
-              {lastFeed.recorded_by && ` · ${lastFeed.recorded_by}`}
+              {todayCount} {todayCount === 1 ? 'feed' : 'feeds'} today
+              {lastFeed && ` · last ${getFeedTimeText(lastFeed.started_at).toLowerCase()}`}
             </p>
           </>
         ) : (
@@ -156,7 +156,7 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
               padding: '12px 0',
             }}
           >
-            No feeds recorded
+            No feeds today
           </p>
         )}
       </div>
