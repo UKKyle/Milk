@@ -3,7 +3,7 @@ import { useAppStore } from '../store';
 import { sessionsService } from '../services/sessionsService';
 import { useHaptics } from '../hooks/mobile';
 import { Session } from '../types';
-import { Plus, ChevronRight, Timer } from 'lucide-react';
+import { Plus, ChevronRight } from 'lucide-react';
 
 interface DashboardProps {
   onNavigate: (screen: 'timer' | 'history' | 'settings' | 'quickadd') => void;
@@ -161,45 +161,75 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
         )}
       </div>
 
-      {/* Quick Actions */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
-        <button
-          onClick={() => { triggerHaptic(15); onNavigate('timer'); }}
+      {/* Time Since Last Feed Card */}
+      <div
+        style={{
+          background: 'var(--bg-surface)',
+          borderRadius: 16,
+          padding: '24px 20px',
+          marginBottom: 24,
+          textAlign: 'center',
+        }}
+      >
+        <p
           style={{
+            fontSize: 13,
+            fontWeight: 500,
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            marginBottom: 8,
+          }}
+        >
+          Time Since Last Feed
+        </p>
+        {lastFeed ? (
+          <p
+            style={{
+              fontSize: 44,
+              fontWeight: 200,
+              letterSpacing: '-0.02em',
+              color: 'var(--text-primary)',
+              lineHeight: 1.1,
+            }}
+          >
+            {getFeedTimeText(lastFeed.started_at)}
+          </p>
+        ) : (
+          <p
+            style={{
+              fontSize: 20,
+              fontWeight: 300,
+              color: 'var(--text-tertiary)',
+              padding: '12px 0',
+            }}
+          >
+            No feeds yet
+          </p>
+        )}
+      </div>
+
+      {/* Log Action */}
+      <div style={{ marginBottom: 24 }}>
+        <button
+          onClick={() => { triggerHaptic(10); onNavigate('quickadd'); }}
+          style={{
+            width: '100%',
             background: 'var(--accent-orange)',
             color: '#000',
             border: 'none',
             borderRadius: 14,
             padding: '18px 16px',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
-            gap: 8,
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-          }}
-        >
-          <Timer size={28} strokeWidth={1.5} />
-          <span style={{ fontSize: 15, fontWeight: 600 }}>Start Timer</span>
-        </button>
-        <button
-          onClick={() => { triggerHaptic(10); onNavigate('quickadd'); }}
-          style={{
-            background: 'var(--bg-surface)',
-            color: 'var(--text-primary)',
-            border: 'none',
-            borderRadius: 14,
-            padding: '18px 16px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            justifyContent: 'center',
             gap: 8,
             cursor: 'pointer',
             fontFamily: 'inherit',
           }}
         >
           <Plus size={28} strokeWidth={1.5} />
-          <span style={{ fontSize: 15, fontWeight: 600 }}>Quick Add</span>
+          <span style={{ fontSize: 17, fontWeight: 600 }}>Log Feed</span>
         </button>
       </div>
 
