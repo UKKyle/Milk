@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { sessionsService } from '../services/sessionsService';
 import { exportToCSV, exportToJSON, importFromJSON } from '../utils/backup';
 import * as localDb from '../services/db';
+import { ChevronRight, Upload, Download, Trash2, LogOut } from 'lucide-react';
 
 interface SettingsProps {
   onBack: () => void;
@@ -25,7 +26,6 @@ export function SettingsScreen({ onBack }: SettingsProps) {
   const { triggerHaptic } = useHaptics();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Retrieve cached sessions list for export processes
   const { data: sessions = [] } = useQuery({
     queryKey: ['sessions', familyId],
     queryFn: () => sessionsService.getSessions(familyId!),
@@ -35,32 +35,18 @@ export function SettingsScreen({ onBack }: SettingsProps) {
   const handleSaveName = () => {
     triggerHaptic(10);
     setPartnerName(nameInput.trim() || 'Partner 1');
-    alert('Partner name updated!');
   };
 
-  const handleExportCSV = () => {
-    triggerHaptic(15);
-    exportToCSV(sessions, familyCode || 'family');
-  };
-
-  const handleExportJSON = () => {
-    triggerHaptic(15);
-    exportToJSON(sessions, familyId || '', familyCode || 'family');
-  };
-
-  const handleImportClick = () => {
-    triggerHaptic(5);
-    fileInputRef.current?.click();
-  };
+  const handleExportCSV = () => { triggerHaptic(15); exportToCSV(sessions, familyCode || 'family'); };
+  const handleExportJSON = () => { triggerHaptic(15); exportToJSON(sessions, familyId || '', familyCode || 'family'); };
+  const handleImportClick = () => { triggerHaptic(5); fileInputRef.current?.click(); };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setIsImporting(true);
-    setImportStatus('Reading backup file...');
+    setImportStatus('Reading backup...');
     triggerHaptic(10);
-
     const reader = new FileReader();
     reader.onload = async (event) => {
       const content = event.target?.result as string;
@@ -68,15 +54,13 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         const result = await importFromJSON(content, familyId!);
         if (result.success) {
           triggerHaptic([20, 50, 20]);
-          setImportStatus(`Success! Imported ${result.importedCount} session records.`);
-          // Flush react-query cached views
+          setImportStatus(`Imported ${result.importedCount} records.`);
           window.location.reload();
         } else {
-          triggerHaptic([30, 30]);
-          setImportStatus(`Import failed: ${result.error}`);
+          setImportStatus(`Failed: ${result.error}`);
         }
       } catch (err: any) {
-        setImportStatus(`Malformed backup: ${err.message}`);
+        setImportStatus(`Error: ${err.message}`);
       } finally {
         setIsImporting(false);
       }
@@ -86,143 +70,144 @@ export function SettingsScreen({ onBack }: SettingsProps) {
 
   const handleClearCache = async () => {
     triggerHaptic([40, 40]);
-    if (confirm('Warning: This will wipe your offline logs cache. Ready?')) {
+    if (confirm('Clear all offline data?')) {
       await localDb.clearLocalSessions();
-      alert('Offline database cached elements cleared successfully.');
       window.location.reload();
     }
   };
 
   const handleLogout = () => {
     triggerHaptic([30, 10, 30]);
-    if (confirm('Leave this family sync space?')) {
-      logout();
-    }
+    if (confirm('Leave this family space?')) { logout(); }
   };
 
   return (
-    <div className="safe-area-container max-w-md mx-auto justify-between py-6">
-      {/* Top Bar */}
-      <div className="flex items-center justify-between py-3 mb-6">
-        <button
-          onClick={onBack}
-          className="text-caption text-neutral-400 active:opacity-60 transition-opacity cursor-pointer"
-        >
-          ✕ Back
-        </button>
-        <span className="text-caption-caps text-amber-500">
-          Settings
-        </span>
-        <div className="w-10" />
-      </div>
-
-      <div className="flex-1 overflow-y-auto space-y-8 pr-1 pb-10">
-        {/* Sync Info */}
-        <div className="premium-card space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-body font-medium">Family Code</span>
-            <span className="text-body font-bold text-amber-500 tracking-wider uppercase">
-              {familyCode}
-            </span>
-          </div>
-          <div className="flex justify-between items-center text-caption">
-            <span>Online Sync status</span>
-            <span className={syncStatus.isOnline ? 'text-green-400' : 'text-neutral-500'}>
-              {syncStatus.isOnline ? '● Connected' : '○ Offline'}
-            </span>
-          </div>
-          {syncStatus.failedCount > 0 && (
-            <div className="text-caption text-red-400 bg-red-950/20 py-2 px-3 rounded-lg border border-red-900/35">
-              ⚠️ {syncStatus.failedCount} operations are waiting in the sync queue.
-            </div>
-          )}
-        </div>
-
-        {/* Profile Settings */}
-        <div className="space-y-3">
-          <label className="text-caption-caps block pl-1">
-            Partner Name
-          </label>
-          <div className="flex space-x-3">
-            <input
-              type="text"
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              className="premium-input flex-1 text-left"
-            />
-            <button
-              onClick={handleSaveName}
-              className="btn-secondary w-auto px-6"
-            >
-              Update
-            </button>
-          </div>
-        </div>
-
-        {/* Export Data */}
-        <div className="space-y-3">
-          <label className="text-caption-caps block pl-1">
-            Data & Backup management
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={handleExportCSV}
-              className="btn-secondary py-3 text-caption font-semibold"
-            >
-              Export CSV
-            </button>
-            <button
-              onClick={handleExportJSON}
-              className="btn-secondary py-3 text-caption font-semibold"
-            >
-              Export JSON
-            </button>
-          </div>
-
-          <div>
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept=".json"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            <button
-              onClick={handleImportClick}
-              disabled={isImporting}
-              className="w-full py-4 bg-amber-500/10 text-caption font-semibold text-amber-500 rounded-2xl active:bg-amber-500/20 transition-colors cursor-pointer"
-            >
-              {isImporting ? 'Importing database records...' : '↑ Import JSON Backup'}
-            </button>
-            {importStatus && (
-              <p className="text-caption text-center text-amber-500/80 mt-3 bg-amber-950/20 py-2.5 rounded-xl border border-amber-900/30">
-                {importStatus}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Maintenance */}
-        <div className="space-y-3">
-          <label className="text-caption-caps block pl-1 text-red-500">
-            Danger Zone
-          </label>
-          <button
-            onClick={handleClearCache}
-            className="w-full text-left py-4 px-5 bg-red-950/20 border border-red-950 text-body font-semibold text-red-400 rounded-2xl active:bg-red-950/30 transition-colors cursor-pointer"
-          >
-            Clear Offline Database Cache
-          </button>
-        </div>
-      </div>
-
-      {/* Logout button */}
-      <button
-        onClick={handleLogout}
-        className="w-full text-center py-4 bg-red-950/30 text-body font-semibold text-red-400 rounded-3xl active:bg-red-950/40 mt-6 transition-colors cursor-pointer"
+    <div
+      style={{
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: 100,
+        minHeight: '100vh',
+      }}
+    >
+      {/* Large Title */}
+      <h1
+        style={{
+          fontSize: 34,
+          fontWeight: 600,
+          letterSpacing: '-0.02em',
+          color: 'var(--text-primary)',
+          marginBottom: 24,
+        }}
       >
-        Leave Family Sync Space
-      </button>
+        Settings
+      </h1>
+
+      {/* Account Section */}
+      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
+        Account
+      </p>
+      <div className="ios-list-group">
+        <div className="ios-list-item" style={{ cursor: 'default' }}>
+          <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>Family Code</span>
+          <span style={{ fontSize: 17, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{familyCode}</span>
+        </div>
+        <div className="ios-list-item" style={{ cursor: 'default' }}>
+          <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>Sync Status</span>
+          <span style={{ fontSize: 15, color: syncStatus.isOnline ? 'var(--accent-green)' : 'var(--text-tertiary)' }}>
+            {syncStatus.isOnline ? 'Connected' : 'Offline'}
+          </span>
+        </div>
+        {syncStatus.failedCount > 0 && (
+          <div className="ios-list-item" style={{ cursor: 'default' }}>
+            <span style={{ fontSize: 15, color: 'var(--accent-red)' }}>
+              {syncStatus.failedCount} pending sync operations
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Profile Section */}
+      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
+        Profile
+      </p>
+      <div className="ios-list-group">
+        <div className="ios-list-item" style={{ cursor: 'default', gap: 12 }}>
+          <span style={{ fontSize: 17, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>Name</span>
+          <input
+            type="text"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            onBlur={handleSaveName}
+            style={{
+              flex: 1,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              fontSize: 17,
+              color: 'var(--text-secondary)',
+              fontFamily: 'inherit',
+              textAlign: 'right',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Data Section */}
+      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
+        Data & Backup
+      </p>
+      <div className="ios-list-group">
+        <div className="ios-list-item" onClick={handleExportCSV}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Download size={20} strokeWidth={1.5} color="var(--accent-blue)" />
+            <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>Export as CSV</span>
+          </div>
+          <ChevronRight size={18} color="var(--text-tertiary)" />
+        </div>
+        <div className="ios-list-item" onClick={handleExportJSON}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Download size={20} strokeWidth={1.5} color="var(--accent-blue)" />
+            <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>Export as JSON</span>
+          </div>
+          <ChevronRight size={18} color="var(--text-tertiary)" />
+        </div>
+        <div className="ios-list-item" onClick={handleImportClick}>
+          <input type="file" ref={fileInputRef} accept=".json" onChange={handleFileChange} style={{ display: 'none' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Upload size={20} strokeWidth={1.5} color="var(--accent-blue)" />
+            <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>
+              {isImporting ? 'Importing...' : 'Import JSON Backup'}
+            </span>
+          </div>
+          <ChevronRight size={18} color="var(--text-tertiary)" />
+        </div>
+      </div>
+      {importStatus && (
+        <p style={{ fontSize: 13, color: 'var(--accent-orange)', textAlign: 'center', marginTop: -16, marginBottom: 24 }}>
+          {importStatus}
+        </p>
+      )}
+
+      {/* Danger Zone */}
+      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
+        Danger Zone
+      </p>
+      <div className="ios-list-group">
+        <div className="ios-list-item" onClick={handleClearCache}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Trash2 size={20} strokeWidth={1.5} color="var(--accent-red)" />
+            <span style={{ fontSize: 17, color: 'var(--accent-red)' }}>Clear Offline Cache</span>
+          </div>
+        </div>
+        <div className="ios-list-item" onClick={handleLogout}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <LogOut size={20} strokeWidth={1.5} color="var(--accent-red)" />
+            <span style={{ fontSize: 17, color: 'var(--accent-red)' }}>Leave Family Space</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

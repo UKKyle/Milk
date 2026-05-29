@@ -3,6 +3,7 @@ import { useAppStore } from '../store';
 import { useHaptics, useWakeLock } from '../hooks/mobile';
 import { sessionsService } from '../services/sessionsService';
 import { useQueryClient } from '@tanstack/react-query';
+import { X } from 'lucide-react';
 
 interface TimerProps {
   onBack: () => void;
@@ -24,7 +25,6 @@ export function TimerScreen({ onBack }: TimerProps) {
   const { requestWakeLock, releaseWakeLock } = useWakeLock();
   const queryClient = useQueryClient();
 
-  // Initialize side selector based on active state or preset
   useEffect(() => {
     if (activeTimer) {
       setSelectedSide(activeTimer.side);
@@ -33,7 +33,6 @@ export function TimerScreen({ onBack }: TimerProps) {
     }
   }, [activeTimer, startTimer, selectedSide]);
 
-  // Wake lock execution during active timer state
   useEffect(() => {
     const isPaused = activeTimer?.pausedAt;
     if (activeTimer && !isPaused) {
@@ -41,22 +40,17 @@ export function TimerScreen({ onBack }: TimerProps) {
     } else {
       releaseWakeLock();
     }
-    return () => {
-      releaseWakeLock();
-    };
+    return () => { releaseWakeLock(); };
   }, [activeTimer, requestWakeLock, releaseWakeLock]);
 
-  // Tick calculation logic accounting for tab suspension/backgrounding
   useEffect(() => {
     if (!activeTimer || activeTimer.pausedAt) return;
-
     const interval = setInterval(() => {
       const startMs = new Date(activeTimer.startedAt).getTime();
-      const nowMs = new Date().getTime();
+      const nowMs = Date.now();
       const elapsed = Math.max(0, Math.floor((nowMs - startMs) / 1000) + activeTimer.accumulatedSeconds);
       setSeconds(elapsed);
     }, 200);
-
     return () => clearInterval(interval);
   }, [activeTimer]);
 
@@ -70,48 +64,32 @@ export function TimerScreen({ onBack }: TimerProps) {
     if (selectedSide === side) return;
     triggerHaptic([10, 20]);
     setSelectedSide(side);
-    
     if (activeTimer) {
-      // Accumulate existing progress before switching side settings
       const now = new Date().toISOString();
       const startMs = new Date(activeTimer.startedAt).getTime();
-      const nowMs = new Date().getTime();
+      const nowMs = Date.now();
       const elapsed = Math.max(0, Math.floor((nowMs - startMs) / 1000) + activeTimer.accumulatedSeconds);
-      
       useAppStore.setState({
-        activeTimer: {
-          side,
-          startedAt: now,
-          accumulatedSeconds: elapsed,
-        }
+        activeTimer: { side, startedAt: now, accumulatedSeconds: elapsed }
       });
     }
   };
 
   const handlePauseToggle = () => {
     triggerHaptic(15);
-    if (activeTimer?.pausedAt) {
-      resumeTimer();
-    } else {
-      pauseTimer();
-    }
+    if (activeTimer?.pausedAt) { resumeTimer(); } else { pauseTimer(); }
   };
 
   const handleSave = async () => {
     if (!activeTimer) return;
     triggerHaptic([20, 50, 20]);
-
-    // Calculate final duration seconds
     const finalDuration = seconds;
-    const startedTime = activeTimer.startedAt;
-    
-    // Save to IndexedDB + Supabase (using session abstraction layers)
     const newSession = await sessionsService.createSession({
       id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now(),
       family_id: familyId!,
       type: selectedSide,
       side: selectedSide,
-      started_at: startedTime,
+      started_at: activeTimer.startedAt,
       ended_at: new Date().toISOString(),
       duration_s: finalDuration,
       volume_ml: null,
@@ -120,85 +98,158 @@ export function TimerScreen({ onBack }: TimerProps) {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
-
-    // Merge into local TanStack cache directly (realtime reconciliation guidelines)
     queryClient.setQueryData(['sessions', familyId], (old: any) => {
       const list = old ? [...old] : [];
       return [newSession, ...list];
     });
-
     clearTimer();
     onBack();
   };
 
   const handleDiscard = () => {
     triggerHaptic([30, 10, 30]);
-    if (confirm('Are you sure you want to discard this feeding session?')) {
-      clearTimer();
-      onBack();
-    }
+    if (confirm('Discard this session?')) { clearTimer(); onBack(); }
   };
 
   const isPaused = activeTimer?.pausedAt;
 
   return (
-    <div className="safe-area-container max-w-md mx-auto justify-between py-6">
-      {/* Top Bar */}
-      <div className="flex items-center justify-between py-3">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 24px)',
+        paddingLeft: 20,
+        paddingRight: 20,
+      }}
+    >
+      {/* Nav Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 44, marginBottom: 8 }}>
         <button
           onClick={onBack}
-          className="text-body text-[var(--accent-orange)] active:opacity-60 transition-opacity cursor-pointer"
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--accent-orange)',
+            fontSize: 17,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+          }}
         >
-          Cancel
+          <X size={20} strokeWidth={1.5} /> Cancel
         </button>
-        <span className="text-headline text-[var(--text-primary)]">
-          Feeding Session
-        </span>
-        <div className="w-16" /> {/* Spacer */}
+        <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)' }}>Feeding</span>
+        <div style={{ width: 80 }} />
       </div>
 
-      {/* Main Timer Display */}
-      <div className="my-auto text-center space-y-12">
-        <div className="text-timer">{formatTime(seconds)}</div>
+      {/* Timer Display */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <p
+          style={{
+            fontSize: 80,
+            fontWeight: 200,
+            letterSpacing: '-0.02em',
+            fontVariantNumeric: 'tabular-nums',
+            color: 'var(--text-primary)',
+            lineHeight: 1,
+            marginBottom: 32,
+          }}
+        >
+          {formatTime(seconds)}
+        </p>
 
-        {/* Side Selector Buttons (Pill Selector Style) */}
-        <div className="pill-selector max-w-[280px] mx-auto">
-          <button
-            onClick={() => handleSideSwitch('left')}
-            className={`pill-option ${selectedSide === 'left' ? 'pill-option-active' : ''}`}
-          >
-            Left Side
-          </button>
-          <button
-            onClick={() => handleSideSwitch('right')}
-            className={`pill-option ${selectedSide === 'right' ? 'pill-option-active' : ''}`}
-          >
-            Right Side
-          </button>
+        {/* Side Selector */}
+        <div
+          style={{
+            display: 'flex',
+            background: 'var(--bg-surface-elevated)',
+            borderRadius: 8,
+            padding: 2,
+            width: 240,
+          }}
+        >
+          {(['left', 'right'] as const).map((side) => (
+            <button
+              key={side}
+              onClick={() => handleSideSwitch(side)}
+              style={{
+                flex: 1,
+                padding: '8px 0',
+                borderRadius: 6,
+                border: 'none',
+                fontSize: 13,
+                fontWeight: selectedSide === side ? 600 : 400,
+                color: 'var(--text-primary)',
+                background: selectedSide === side ? 'var(--border-color)' : 'transparent',
+                boxShadow: selectedSide === side ? '0 1px 4px rgba(0,0,0,0.2)' : 'none',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'all 0.2s ease',
+                textTransform: 'capitalize',
+              }}
+            >
+              {side} side
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="space-y-4 w-full mt-auto">
+      {/* Bottom Actions */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 16 }}>
         <button
           onClick={handlePauseToggle}
-          className="btn-secondary"
+          style={{
+            width: '100%',
+            height: 50,
+            borderRadius: 12,
+            border: 'none',
+            background: 'var(--bg-surface)',
+            color: 'var(--text-primary)',
+            fontSize: 17,
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
         >
-          {isPaused ? 'Resume Feeding' : 'Pause'}
+          {isPaused ? 'Resume' : 'Pause'}
         </button>
-
-        <div className="grid grid-cols-2 gap-4">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <button
             onClick={handleDiscard}
-            className="py-4 bg-[#ff453a20] text-[var(--accent-red)] font-semibold rounded-[14px] active:bg-[#ff453a40] transition-colors cursor-pointer text-[17px] tracking-tight"
+            style={{
+              height: 50,
+              borderRadius: 12,
+              border: 'none',
+              background: 'rgba(255,69,58,0.15)',
+              color: 'var(--accent-red)',
+              fontSize: 17,
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
           >
             Discard
           </button>
           <button
             onClick={handleSave}
-            className="btn-primary"
+            style={{
+              height: 50,
+              borderRadius: 12,
+              border: 'none',
+              background: 'var(--accent-orange)',
+              color: '#000',
+              fontSize: 17,
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
           >
-            Save Session
+            Save
           </button>
         </div>
       </div>

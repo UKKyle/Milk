@@ -3,6 +3,7 @@ import { useAppStore } from '../store';
 import { sessionsService } from '../services/sessionsService';
 import { useHaptics } from '../hooks/mobile';
 import { Session } from '../types';
+import { Plus, ChevronRight, Timer } from 'lucide-react';
 
 interface DashboardProps {
   onNavigate: (screen: 'timer' | 'history' | 'settings' | 'quickadd') => void;
@@ -11,197 +12,273 @@ interface DashboardProps {
 export function DashboardScreen({ onNavigate }: DashboardProps) {
   const familyId = useAppStore((state) => state.familyId);
   const syncStatus = useAppStore((state) => state.syncStatus);
-  const startTimer = useAppStore((state) => state.startTimer);
   const { triggerHaptic } = useHaptics();
 
-  // Load feed sessions via reactive TanStack query
   const { data: sessions = [], isLoading } = useQuery<Session[]>({
     queryKey: ['sessions', familyId],
     queryFn: () => sessionsService.getSessions(familyId!),
     enabled: !!familyId,
-    refetchInterval: 10000, // Background updates
+    refetchInterval: 10000,
   });
 
-  // Calculate Last Feed metrics
   const lastFeed = sessions.find(
     (s) => s.type === 'left' || s.type === 'right' || s.type === 'bottle'
   );
 
   const getFeedTimeText = (startedAt: string) => {
-    const elapsedMs = new Date().getTime() - new Date(startedAt).getTime();
+    const elapsedMs = Date.now() - new Date(startedAt).getTime();
     const mins = Math.floor(elapsedMs / 60000);
-    if (mins < 1) return 'just now';
+    if (mins < 1) return 'Just now';
     if (mins < 60) return `${mins}m ago`;
     const hours = Math.floor(mins / 60);
     if (hours < 24) return `${hours}h ago`;
-    return new Date(startedAt).toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric',
-    });
+    return new Date(startedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   };
 
-  const getSideText = (feed: Session) => {
-    if (feed.type === 'bottle') return `Bottle (${feed.volume_ml}ml)`;
-    if (feed.type === 'pump') return `Pump (${feed.volume_ml}ml)`;
-    return feed.side === 'left' ? 'Left' : 'Right';
+  const getSideLabel = (s: Session) => {
+    if (s.type === 'bottle') return 'Bottle';
+    if (s.type === 'pump') return 'Pump';
+    return s.side === 'left' ? 'Left Breast' : 'Right Breast';
   };
 
-  const getDurationText = (feed: Session) => {
-    if (!feed.duration_s) return '';
-    const mins = Math.floor(feed.duration_s / 60);
-    return `${mins} min`;
+  const getDetail = (s: Session) => {
+    if (s.volume_ml) return `${s.volume_ml} ml`;
+    if (s.duration_s) return `${Math.floor(s.duration_s / 60)} min`;
+    return '';
   };
 
-  const handleStartFeeding = () => {
-    triggerHaptic(15);
-    onNavigate('timer');
-  };
-
-  const getFeedTypeIcon = (type: string) => {
-    switch (type) {
-      case 'bottle':
-        return '🍼';
-      case 'pump':
-        return '⚙️';
-      default:
-        return '🤱';
-    }
-  };
+  // Today's summary
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todaySessions = sessions.filter((s) => new Date(s.started_at) >= todayStart);
+  const todayCount = todaySessions.length;
+  const todayVolume = todaySessions.reduce((sum, s) => sum + (s.volume_ml || 0), 0);
 
   return (
-    <div className="safe-area-container max-w-md mx-auto justify-between py-6">
-      {/* Header */}
-      <div className="flex items-center justify-between py-3">
-        <h1 className="text-large-title font-semibold">Today</h1>
-        <div className="flex items-center space-x-3">
-          {syncStatus.failedCount > 0 && (
-            <span className="text-[var(--accent-red)] text-caption animate-pulse">
-              ⚠️ {syncStatus.failedCount} pending
-            </span>
-          )}
-          <button
-            onClick={() => {
-              triggerHaptic(5);
-              onNavigate('settings');
-            }}
-            className="w-11 h-11 rounded-full flex items-center justify-center bg-[var(--bg-surface)] text-lg active:scale-95 transition-transform cursor-pointer"
-          >
-            ⚙️
-          </button>
+    <div
+      style={{
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: 24,
+      }}
+    >
+      {/* Large Title */}
+      <h1
+        style={{
+          fontSize: 34,
+          fontWeight: 600,
+          letterSpacing: '-0.02em',
+          color: 'var(--text-primary)',
+          marginBottom: 24,
+        }}
+      >
+        Dashboard
+      </h1>
+
+      {/* Sync Warning */}
+      {syncStatus.failedCount > 0 && (
+        <div
+          style={{
+            background: 'rgba(255,69,58,0.15)',
+            borderRadius: 10,
+            padding: '10px 14px',
+            marginBottom: 20,
+            fontSize: 13,
+            color: 'var(--accent-red)',
+          }}
+        >
+          ⚠ {syncStatus.failedCount} changes waiting to sync
         </div>
+      )}
+
+      {/* Last Feed Hero Card */}
+      <div
+        style={{
+          background: 'var(--bg-surface)',
+          borderRadius: 16,
+          padding: '24px 20px',
+          marginBottom: 24,
+          textAlign: 'center',
+        }}
+      >
+        <p
+          style={{
+            fontSize: 13,
+            fontWeight: 500,
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            marginBottom: 8,
+          }}
+        >
+          Last Feed
+        </p>
+        {isLoading ? (
+          <div style={{ padding: '16px 0' }}>
+            <div
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                border: '2px solid var(--bg-surface-elevated)',
+                borderTopColor: 'var(--accent-orange)',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto',
+              }}
+            />
+          </div>
+        ) : lastFeed ? (
+          <>
+            <p
+              style={{
+                fontSize: 44,
+                fontWeight: 200,
+                letterSpacing: '-0.02em',
+                color: 'var(--text-primary)',
+                lineHeight: 1.1,
+                marginBottom: 4,
+              }}
+            >
+              {getFeedTimeText(lastFeed.started_at)}
+            </p>
+            <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
+              {getSideLabel(lastFeed)}
+              {lastFeed.recorded_by && ` · ${lastFeed.recorded_by}`}
+            </p>
+          </>
+        ) : (
+          <p
+            style={{
+              fontSize: 20,
+              fontWeight: 300,
+              color: 'var(--text-tertiary)',
+              padding: '12px 0',
+            }}
+          >
+            No feeds recorded
+          </p>
+        )}
       </div>
 
-      {/* Hero Last Feed Block */}
-      <div className="my-auto py-8 space-y-10 flex flex-col items-center">
-        <div className="text-center space-y-2.5">
-          <p className="text-caption uppercase tracking-wider text-[var(--text-secondary)]">Last feed</p>
-          {isLoading ? (
-            <div className="h-16 flex items-center justify-center">
-              <div className="w-6 h-6 rounded-full border-2 border-[var(--bg-surface)] border-t-[var(--accent-orange)] animate-spin" />
-            </div>
-          ) : lastFeed ? (
-            <div className="space-y-1">
-              <h2 className="text-[40px] font-light tracking-tight text-[var(--text-primary)] capitalize">
-                {getSideText(lastFeed)}
-              </h2>
-              <p className="text-body text-[var(--text-secondary)]">
-                {getFeedTimeText(lastFeed.started_at)} {lastFeed.recorded_by && ` • ${lastFeed.recorded_by}`}
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-1">
-              <h2 className="text-[40px] font-light tracking-tight text-[var(--text-primary)]">
-                No logs
-              </h2>
-              <p className="text-body text-[var(--text-secondary)]">
-                Tap below to start tracking
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Start Button */}
+      {/* Quick Actions */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
         <button
-          onClick={handleStartFeeding}
-          className="relative group cursor-pointer"
+          onClick={() => { triggerHaptic(15); onNavigate('timer'); }}
+          style={{
+            background: 'var(--accent-orange)',
+            color: '#000',
+            border: 'none',
+            borderRadius: 14,
+            padding: '18px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 8,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
         >
-          <div className="absolute inset-0 bg-[var(--accent-orange)] rounded-full blur-xl opacity-20 group-active:opacity-40 transition-opacity" />
-          <div className="relative w-32 h-32 rounded-full bg-[var(--bg-surface-elevated)] flex flex-col items-center justify-center active:scale-95 transition-transform shadow-2xl border border-[var(--border-color)]">
-            <span className="text-4xl filter drop-shadow-md mb-1">🍼</span>
-            <span className="text-headline text-[var(--accent-orange)] mt-2">Start</span>
-          </div>
+          <Timer size={28} strokeWidth={1.5} />
+          <span style={{ fontSize: 15, fontWeight: 600 }}>Start Timer</span>
+        </button>
+        <button
+          onClick={() => { triggerHaptic(10); onNavigate('quickadd'); }}
+          style={{
+            background: 'var(--bg-surface)',
+            color: 'var(--text-primary)',
+            border: 'none',
+            borderRadius: 14,
+            padding: '18px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 8,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={28} strokeWidth={1.5} />
+          <span style={{ fontSize: 15, fontWeight: 600 }}>Quick Add</span>
         </button>
       </div>
 
-      {/* Recent Activity List Preview */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between px-1">
-          <h3 className="text-headline text-[var(--text-primary)]">Recent</h3>
-          {sessions.length > 0 && (
-            <button
-              onClick={() => {
-                triggerHaptic(5);
-                onNavigate('history');
-              }}
-              className="text-body text-[var(--accent-orange)] active:opacity-60 cursor-pointer"
-            >
-              See All
-            </button>
-          )}
+      {/* Today's Summary */}
+      <p
+        style={{
+          fontSize: 13,
+          fontWeight: 500,
+          color: 'var(--text-secondary)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          padding: '0 16px 8px',
+        }}
+      >
+        Today's Summary
+      </p>
+      <div className="ios-list-group">
+        <div className="ios-list-item" style={{ cursor: 'default' }}>
+          <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>Total Feeds</span>
+          <span style={{ fontSize: 17, color: 'var(--text-secondary)' }}>{todayCount}</span>
         </div>
-
-        {sessions.length === 0 && !isLoading ? (
-          <div className="premium-card py-10 text-center">
-            <p className="text-body text-[var(--text-secondary)]">
-              Your feeding history will appear here
-            </p>
+        {todayVolume > 0 && (
+          <div className="ios-list-item" style={{ cursor: 'default' }}>
+            <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>Total Volume</span>
+            <span style={{ fontSize: 17, color: 'var(--text-secondary)' }}>{todayVolume} ml</span>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {sessions.slice(0, 3).map((session) => (
-              <div
-                key={session.id}
-                className="premium-card flex items-center justify-between"
-              >
-                <div className="flex items-center space-x-4">
-                  <span className="text-2xl w-10 h-10 flex items-center justify-center bg-[var(--bg-base)] rounded-xl">
-                    {getFeedTypeIcon(session.type)}
-                  </span>
-                  <div>
-                    <p className="text-headline capitalize text-[var(--text-primary)]">
-                      {getSideText(session)}
-                    </p>
-                    <p className="text-caption mt-1">
-                      {new Date(session.started_at).toLocaleTimeString(undefined, {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                      })}
-                      {session.recorded_by && ` • ${session.recorded_by}`}
-                    </p>
-                  </div>
+        )}
+      </div>
+
+      {/* Recent Feeds */}
+      {sessions.length > 0 && (
+        <>
+          <p
+            style={{
+              fontSize: 13,
+              fontWeight: 500,
+              color: 'var(--text-secondary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              padding: '0 16px 8px',
+            }}
+          >
+            Recent
+          </p>
+          <div className="ios-list-group">
+            {sessions.slice(0, 4).map((session) => (
+              <div className="ios-list-item" key={session.id} style={{ cursor: 'default' }}>
+                <div>
+                  <p style={{ fontSize: 17, color: 'var(--text-primary)', fontWeight: 400 }}>
+                    {getSideLabel(session)}
+                  </p>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>
+                    {new Date(session.started_at).toLocaleTimeString(undefined, {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                    })}
+                    {session.recorded_by && ` · ${session.recorded_by}`}
+                  </p>
                 </div>
-                <div className="text-right">
-                  {session.volume_ml ? (
-                    <p className="text-headline text-[var(--text-primary)]">{session.volume_ml}ml</p>
-                  ) : (
-                    <p className="text-headline text-[var(--text-primary)]">{getDurationText(session)}</p>
-                  )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 17, color: 'var(--text-secondary)' }}>
+                    {getDetail(session)}
+                  </span>
                 </div>
               </div>
             ))}
+            <div
+              className="ios-list-item"
+              onClick={() => { triggerHaptic(5); onNavigate('history'); }}
+              style={{ justifyContent: 'center', gap: 4 }}
+            >
+              <span style={{ fontSize: 15, color: 'var(--accent-orange)', fontWeight: 500 }}>
+                View All History
+              </span>
+              <ChevronRight size={16} color="var(--accent-orange)" />
+            </div>
           </div>
-        )}
-
-        <button
-          onClick={() => {
-            triggerHaptic(10);
-            onNavigate('quickadd');
-          }}
-          className="btn-secondary mt-2"
-        >
-          Quick Add Manual Log
-        </button>
-      </div>
+        </>
+      )}
     </div>
   );
 }

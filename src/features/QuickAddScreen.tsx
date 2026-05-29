@@ -4,6 +4,7 @@ import { useHaptics } from '../hooks/mobile';
 import { sessionsService } from '../services/sessionsService';
 import { useQueryClient } from '@tanstack/react-query';
 import { SessionType } from '../types';
+import { X, Minus, Plus as PlusIcon } from 'lucide-react';
 
 interface QuickAddProps {
   onBack: () => void;
@@ -19,7 +20,6 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
 
   const familyId = useAppStore((state) => state.familyId);
   const partnerName = useAppStore((state) => state.partnerName);
-
   const { triggerHaptic } = useHaptics();
   const queryClient = useQueryClient();
 
@@ -47,131 +47,153 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
       const list = old ? [...old] : [];
       return [newSession, ...list];
     });
-
     onBack();
   };
 
   const isBreast = type === 'left' || type === 'right';
 
+  const types: { key: SessionType | 'breast'; label: string }[] = [
+    { key: 'bottle', label: 'Bottle' },
+    { key: 'breast', label: 'Breast' },
+    { key: 'pump', label: 'Pump' },
+  ];
+
+  const segmentButton = (label: string, isActive: boolean, onClick: () => void) => (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        flex: 1,
+        padding: '8px 0',
+        borderRadius: 6,
+        border: 'none',
+        fontSize: 13,
+        fontWeight: isActive ? 600 : 400,
+        color: 'var(--text-primary)',
+        background: isActive ? 'var(--border-color)' : 'transparent',
+        boxShadow: isActive ? '0 1px 4px rgba(0,0,0,0.2)' : 'none',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        transition: 'all 0.2s ease',
+      }}
+    >
+      {label}
+    </button>
+  );
+
+  const stepperRow = (label: string, value: number, unit: string, onDec: () => void, onInc: () => void) => (
+    <div style={{ marginBottom: 24 }}>
+      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>{label}</p>
+      <div className="ios-list-group" style={{ marginBottom: 0 }}>
+        <div className="ios-list-item" style={{ cursor: 'default', justifyContent: 'space-between' }}>
+          <button type="button" onClick={onDec} style={{ width: 44, height: 44, borderRadius: 22, background: 'var(--bg-base)', border: '0.5px solid var(--border-color)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <Minus size={18} strokeWidth={1.5} />
+          </button>
+          <span style={{ fontSize: 34, fontWeight: 200, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+            {value}
+            <span style={{ fontSize: 17, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 4 }}>{unit}</span>
+          </span>
+          <button type="button" onClick={onInc} style={{ width: 44, height: 44, borderRadius: 22, background: 'var(--bg-base)', border: '0.5px solid var(--border-color)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <PlusIcon size={18} strokeWidth={1.5} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="safe-area-container max-w-md mx-auto justify-between py-6">
-      {/* Top Bar */}
-      <div className="flex items-center justify-between py-3">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 24px)',
+        paddingLeft: 20,
+        paddingRight: 20,
+      }}
+    >
+      {/* Nav Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 44, marginBottom: 16 }}>
         <button
           onClick={onBack}
-          className="text-body text-[var(--accent-orange)] active:opacity-60 transition-opacity cursor-pointer"
+          style={{ background: 'none', border: 'none', color: 'var(--accent-orange)', fontSize: 17, fontFamily: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
         >
-          Cancel
+          <X size={20} strokeWidth={1.5} /> Cancel
         </button>
-        <span className="text-headline text-[var(--text-primary)]">Quick Record</span>
-        <div className="w-16" />
+        <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)' }}>Quick Add</span>
+        <div style={{ width: 80 }} />
       </div>
 
-      <form onSubmit={handleSave} className="flex-1 flex flex-col justify-center space-y-8 w-full py-6">
-        {/* Type selector — pill style */}
-        <div className="pill-selector">
-          {(['bottle', 'pump', 'left'] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => {
+      <form onSubmit={handleSave} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        {/* Type Selector */}
+        <div style={{ marginBottom: 24 }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>Type</p>
+          <div style={{ display: 'flex', background: 'var(--bg-surface-elevated)', borderRadius: 8, padding: 2 }}>
+            {types.map((t) => {
+              const isActive = t.key === 'breast' ? isBreast : type === t.key;
+              return segmentButton(t.label, isActive, () => {
                 triggerHaptic(5);
-                setType(t);
-                if (t === 'left') setSide('left');
-              }}
-              className={`pill-option ${
-                type === t || (t === 'left' && isBreast)
-                  ? 'pill-option-active'
-                  : ''
-              }`}
-            >
-              {t === 'left' ? '🤱 Breast' : t === 'bottle' ? '🍼 Bottle' : '⚙️ Pump'}
-            </button>
-          ))}
+                if (t.key === 'breast') { setType('left'); setSide('left'); }
+                else { setType(t.key as SessionType); }
+              });
+            })}
+          </div>
         </div>
 
-        {/* Breast side sub-selector */}
+        {/* Breast Side Sub-selector */}
         {isBreast && (
-          <div className="pill-selector max-w-[240px] mx-auto">
-            {(['left', 'right'] as const).map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => {
-                  triggerHaptic(5);
-                  setType(s);
-                  setSide(s);
-                }}
-                className={`pill-option capitalize ${type === s ? 'pill-option-active' : ''}`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Volume stepper */}
-        {(type === 'bottle' || type === 'pump') && (
-          <div className="space-y-2.5">
-            <label className="text-caption uppercase tracking-wider text-[var(--text-secondary)] block pl-1">Volume (ml)</label>
-            <div className="premium-card flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => { triggerHaptic(5); setVolume(v => Math.max(10, v - 10)); }}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] text-xl font-light active:scale-90 transition-transform cursor-pointer border border-[var(--border-color)]"
-              >
-                −
-              </button>
-              <span className="text-large-title tabular-nums">{volume}<span className="text-body text-[var(--text-secondary)] ml-1">ml</span></span>
-              <button
-                type="button"
-                onClick={() => { triggerHaptic(5); setVolume(v => v + 10); }}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] text-xl font-light active:scale-90 transition-transform cursor-pointer border border-[var(--border-color)]"
-              >
-                +
-              </button>
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ display: 'flex', background: 'var(--bg-surface-elevated)', borderRadius: 8, padding: 2, maxWidth: 200, margin: '0 auto' }}>
+              {(['left', 'right'] as const).map((s) =>
+                segmentButton(s.charAt(0).toUpperCase() + s.slice(1), type === s, () => { triggerHaptic(5); setType(s); setSide(s); })
+              )}
             </div>
           </div>
         )}
 
-        {/* Duration stepper */}
-        {(type === 'pump' || isBreast) && (
-          <div className="space-y-2.5">
-            <label className="text-caption uppercase tracking-wider text-[var(--text-secondary)] block pl-1">Duration</label>
-            <div className="premium-card flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => { triggerHaptic(5); setDurationMins(d => Math.max(1, d - 1)); }}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] text-xl font-light active:scale-90 transition-transform cursor-pointer border border-[var(--border-color)]"
-              >
-                −
-              </button>
-              <span className="text-large-title tabular-nums">{durationMins}<span className="text-body text-[var(--text-secondary)] ml-1">min</span></span>
-              <button
-                type="button"
-                onClick={() => { triggerHaptic(5); setDurationMins(d => d + 1); }}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] text-xl font-light active:scale-90 transition-transform cursor-pointer border border-[var(--border-color)]"
-              >
-                +
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Volume */}
+        {(type === 'bottle' || type === 'pump') &&
+          stepperRow('Volume', volume, 'ml', () => { triggerHaptic(5); setVolume((v) => Math.max(10, v - 10)); }, () => { triggerHaptic(5); setVolume((v) => v + 10); })}
+
+        {/* Duration */}
+        {(type === 'pump' || isBreast) &&
+          stepperRow('Duration', durationMins, 'min', () => { triggerHaptic(5); setDurationMins((d) => Math.max(1, d - 1)); }, () => { triggerHaptic(5); setDurationMins((d) => d + 1); })}
 
         {/* Notes */}
-        <div className="space-y-2.5">
-          <label className="text-caption uppercase tracking-wider text-[var(--text-secondary)] block pl-1">Notes (optional)</label>
-          <input
-            type="text"
-            placeholder="Add details..."
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="premium-input text-left"
-          />
+        <div style={{ marginBottom: 24 }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>Notes</p>
+          <div className="ios-list-group" style={{ marginBottom: 0 }}>
+            <div className="ios-list-item" style={{ cursor: 'default' }}>
+              <input
+                type="text"
+                placeholder="Optional notes..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: 17, color: 'var(--text-primary)', fontFamily: 'inherit' }}
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Submit */}
-        <button type="submit" disabled={isLoading} className="btn-primary mt-4">
+        {/* Save */}
+        <button
+          type="submit"
+          disabled={isLoading}
+          style={{
+            width: '100%',
+            height: 50,
+            borderRadius: 12,
+            border: 'none',
+            background: 'var(--accent-orange)',
+            color: '#000',
+            fontSize: 17,
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            opacity: isLoading ? 0.6 : 1,
+          }}
+        >
           {isLoading ? 'Saving...' : 'Save Record'}
         </button>
       </form>

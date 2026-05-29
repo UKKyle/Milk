@@ -21,7 +21,7 @@
     
     --border-color: #38383A;     /* Opaque Separator */
     
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
     background-color: var(--bg-base);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
@@ -118,6 +118,79 @@
 .premium-card:active {
   background-color: var(--bg-surface-elevated);
   transform: scale(0.985);
+}
+
+/* iOS Grouped Lists */
+.ios-list-group {
+  background: var(--bg-surface);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.ios-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  min-height: 44px;
+  background: transparent;
+  border-bottom: 0.5px solid var(--border-color);
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.ios-list-item:last-child {
+  border-bottom: none;
+}
+
+.ios-list-item:active {
+  background-color: var(--bg-surface-elevated);
+}
+
+/* iOS Glassmorphism (Backdrop Blurs) */
+.ios-glass-header {
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.ios-bottom-tabs {
+  background-color: rgba(28, 28, 30, 0.85); /* Slightly lighter than pure black for depth */
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--border-color);
+  padding-bottom: env(safe-area-inset-bottom, 24px);
+  padding-top: 8px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+.ios-tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text-tertiary);
+  font-size: 10px;
+  font-weight: 500;
+  width: 60px;
+  transition: color 0.2s ease;
+}
+
+.ios-tab-item.active {
+  color: var(--accent-orange);
 }
 
 /* Premium Button Styling */
@@ -217,3 +290,20 @@
   background-color: var(--border-color);
 }
 
+/* Spinner Animation */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* iOS List Item Input Placeholders */
+.ios-list-item input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Remove button border for tab items */
+.ios-tab-item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}

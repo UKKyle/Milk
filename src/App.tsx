@@ -121,39 +121,68 @@ export function App() {
 
   if (!familyId) {
     return (
-      <main className="min-h-screen flex flex-col justify-between bg-[#0d0d0d] text-neutral-100 font-sans antialiased">
+      <main className="min-h-screen flex flex-col justify-between font-sans antialiased">
         <WelcomeScreen />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen flex flex-col bg-[#0d0d0d] text-neutral-100 font-sans antialiased">
+    <main className="min-h-screen flex flex-col font-sans antialiased pb-20">
+      {/* Overlays / Full Screen Modals */}
       {currentScreen === 'recovery' && (
-        <SessionRecoveryScreen
-          onResume={() => setCurrentScreen('timer')}
-          onDiscard={() => setCurrentScreen('dashboard')}
-        />
-      )}
-
-      {currentScreen === 'dashboard' && (
-        <DashboardScreen onNavigate={(screen) => setCurrentScreen(screen as any)} />
+        <div className="fixed inset-0 bg-[var(--bg-base)] z-50 overflow-y-auto">
+          <SessionRecoveryScreen
+            onResume={() => setCurrentScreen('timer')}
+            onDiscard={() => setCurrentScreen('dashboard')}
+          />
+        </div>
       )}
 
       {currentScreen === 'timer' && (
-        <TimerScreen onBack={() => setCurrentScreen('dashboard')} />
+        <div className="fixed inset-0 bg-[var(--bg-base)] z-50 overflow-y-auto">
+          <TimerScreen onBack={() => setCurrentScreen('dashboard')} />
+        </div>
       )}
 
       {currentScreen === 'quickadd' && (
-        <QuickAddScreen onBack={() => setCurrentScreen('dashboard')} />
+        <div className="fixed inset-0 bg-[var(--bg-base)] z-50 overflow-y-auto">
+          <QuickAddScreen onBack={() => setCurrentScreen('dashboard')} />
+        </div>
       )}
 
-      {currentScreen === 'history' && (
-        <HistoryScreen onBack={() => setCurrentScreen('dashboard')} />
-      )}
+      {/* Main Tab Content */}
+      {currentScreen === 'dashboard' && <DashboardScreen onNavigate={(screen) => setCurrentScreen(screen as any)} />}
+      {currentScreen === 'history' && <HistoryScreen onBack={() => setCurrentScreen('dashboard')} />}
+      {currentScreen === 'settings' && <SettingsScreen onBack={() => setCurrentScreen('dashboard')} />}
 
-      {currentScreen === 'settings' && (
-        <SettingsScreen onBack={() => setCurrentScreen('dashboard')} />
+      {/* iOS Bottom Tab Bar */}
+      {['dashboard', 'history', 'settings'].includes(currentScreen) && (
+        <div className="ios-bottom-tabs">
+          <button 
+            className={`ios-tab-item ${currentScreen === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setCurrentScreen('dashboard')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={currentScreen === 'dashboard' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Dashboard
+          </button>
+          
+          <button 
+            className={`ios-tab-item ${currentScreen === 'history' ? 'active' : ''}`}
+            onClick={() => setCurrentScreen('history')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            History
+          </button>
+
+          <button 
+            className={`ios-tab-item ${currentScreen === 'settings' ? 'active' : ''}`}
+            onClick={() => setCurrentScreen('settings')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={currentScreen === 'settings' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Settings
+          </button>
+        </div>
       )}
     </main>
   );

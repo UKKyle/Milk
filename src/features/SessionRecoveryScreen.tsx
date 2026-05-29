@@ -3,6 +3,7 @@ import { useAppStore } from '../store';
 import { useHaptics } from '../hooks/mobile';
 import { sessionsService } from '../services/sessionsService';
 import { useQueryClient } from '@tanstack/react-query';
+import { Droplet } from 'lucide-react';
 
 interface RecoveryProps {
   onResume: () => void;
@@ -22,7 +23,7 @@ export function SessionRecoveryScreen({ onResume, onDiscard }: RecoveryProps) {
   useEffect(() => {
     if (!activeTimer) return;
     const startMs = new Date(activeTimer.startedAt).getTime();
-    const nowMs = new Date().getTime();
+    const nowMs = Date.now();
     const totalSecs = Math.max(0, Math.floor((nowMs - startMs) / 1000) + activeTimer.accumulatedSeconds);
     setElapsedMins(Math.floor(totalSecs / 60));
   }, [activeTimer]);
@@ -32,7 +33,7 @@ export function SessionRecoveryScreen({ onResume, onDiscard }: RecoveryProps) {
   const handleEndSession = async () => {
     triggerHaptic([20, 50, 20]);
     const startMs = new Date(activeTimer.startedAt).getTime();
-    const nowMs = new Date().getTime();
+    const nowMs = Date.now();
     const totalSecs = Math.max(0, Math.floor((nowMs - startMs) / 1000) + activeTimer.accumulatedSeconds);
 
     const newSession = await sessionsService.createSession({
@@ -44,7 +45,7 @@ export function SessionRecoveryScreen({ onResume, onDiscard }: RecoveryProps) {
       ended_at: new Date().toISOString(),
       duration_s: totalSecs,
       volume_ml: null,
-      notes: 'Recovered background session',
+      notes: 'Recovered session',
       recorded_by: partnerName,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -61,45 +62,97 @@ export function SessionRecoveryScreen({ onResume, onDiscard }: RecoveryProps) {
 
   const handleDiscard = () => {
     triggerHaptic([30, 10, 30]);
-    if (confirm('Discard your interrupted active session?')) {
-      clearTimer();
-      onDiscard();
-    }
+    if (confirm('Discard this session?')) { clearTimer(); onDiscard(); }
   };
 
   return (
-    <div className="safe-area-container justify-center max-w-sm mx-auto w-full text-center space-y-8">
-      <div className="space-y-4">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/10 text-amber-500 text-3xl mb-4 animate-pulse">
-          🤱
-        </div>
-        <h1 className="text-title">You were feeding</h1>
-        <p className="text-body font-medium text-neutral-300 capitalize">
-          {activeTimer.side} side
-        </p>
-        <p className="text-caption">
-          Started about {elapsedMins} {elapsedMins === 1 ? 'min' : 'mins'} ago
-        </p>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        padding: '0 32px',
+        textAlign: 'center',
+      }}
+    >
+      <div
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: 40,
+          background: 'rgba(255,159,10,0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 24,
+        }}
+      >
+        <Droplet size={36} strokeWidth={1.5} color="var(--accent-orange)" />
       </div>
 
-      <div className="space-y-4 pt-6">
+      <h1 style={{ fontSize: 28, fontWeight: 300, color: 'var(--text-primary)', marginBottom: 8 }}>
+        Session in progress
+      </h1>
+      <p style={{ fontSize: 17, color: 'var(--text-secondary)', marginBottom: 4, textTransform: 'capitalize' }}>
+        {activeTimer.side} side
+      </p>
+      <p style={{ fontSize: 15, color: 'var(--text-tertiary)', marginBottom: 40 }}>
+        Started ~{elapsedMins} {elapsedMins === 1 ? 'minute' : 'minutes'} ago
+      </p>
+
+      <div style={{ width: '100%', maxWidth: 300, display: 'flex', flexDirection: 'column', gap: 12 }}>
         <button
           onClick={onResume}
-          className="w-full btn-primary block text-center cursor-pointer"
+          style={{
+            width: '100%',
+            height: 50,
+            borderRadius: 12,
+            border: 'none',
+            background: 'var(--accent-orange)',
+            color: '#000',
+            fontSize: 17,
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
         >
-          Resume Session
+          Resume
         </button>
         <button
           onClick={handleEndSession}
-          className="btn-secondary w-full py-4 text-body cursor-pointer"
+          style={{
+            width: '100%',
+            height: 50,
+            borderRadius: 12,
+            border: 'none',
+            background: 'var(--bg-surface)',
+            color: 'var(--text-primary)',
+            fontSize: 17,
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
         >
-          End Session Now
+          End & Save
         </button>
         <button
           onClick={handleDiscard}
-          className="w-full py-3.5 text-caption text-red-400 rounded-xl active:text-red-300 transition-colors cursor-pointer"
+          style={{
+            width: '100%',
+            height: 44,
+            borderRadius: 12,
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--accent-red)',
+            fontSize: 15,
+            fontWeight: 500,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
         >
-          Discard Session
+          Discard
         </button>
       </div>
     </div>
