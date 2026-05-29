@@ -72,10 +72,10 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
     <div className="safe-area-container max-w-md mx-auto justify-between py-6">
       {/* Header */}
       <div className="flex items-center justify-between py-3">
-        <h1 className="text-title tracking-tight text-neutral-100">Today</h1>
+        <h1 className="text-large-title font-semibold">Today</h1>
         <div className="flex items-center space-x-3">
           {syncStatus.failedCount > 0 && (
-            <span className="text-red-400 text-caption animate-pulse">
+            <span className="text-[var(--accent-red)] text-caption animate-pulse">
               ⚠️ {syncStatus.failedCount} pending
             </span>
           )}
@@ -84,7 +84,7 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
               triggerHaptic(5);
               onNavigate('settings');
             }}
-            className="w-11 h-11 rounded-full flex items-center justify-center bg-neutral-900 text-lg active:scale-95 transition-transform cursor-pointer"
+            className="w-11 h-11 rounded-full flex items-center justify-center bg-[var(--bg-surface)] text-lg active:scale-95 transition-transform cursor-pointer"
           >
             ⚙️
           </button>
@@ -94,95 +94,112 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
       {/* Hero Last Feed Block */}
       <div className="my-auto py-8 space-y-10 flex flex-col items-center">
         <div className="text-center space-y-2.5">
-          <p className="text-caption-caps">Last feed</p>
+          <p className="text-caption uppercase tracking-wider text-[var(--text-secondary)]">Last feed</p>
           {isLoading ? (
             <div className="h-16 flex items-center justify-center">
-              <div className="w-6 h-6 rounded-full border-2 border-neutral-900 border-t-amber-500 animate-spin" />
+              <div className="w-6 h-6 rounded-full border-2 border-[var(--bg-surface)] border-t-[var(--accent-orange)] animate-spin" />
             </div>
           ) : lastFeed ? (
             <div className="space-y-1">
-              <h2 className="text-3xl font-light text-neutral-100 tracking-tight">
+              <h2 className="text-[40px] font-light tracking-tight text-[var(--text-primary)] capitalize">
                 {getSideText(lastFeed)}
-                {getDurationText(lastFeed) && ` • ${getDurationText(lastFeed)}`}
               </h2>
-              <p className="text-body text-neutral-400">{getFeedTimeText(lastFeed.started_at)}</p>
+              <p className="text-body text-[var(--text-secondary)]">
+                {getFeedTimeText(lastFeed.started_at)} {lastFeed.recorded_by && ` • ${lastFeed.recorded_by}`}
+              </p>
             </div>
           ) : (
-            <p className="text-body text-neutral-500">No feeds recorded yet</p>
+            <div className="space-y-1">
+              <h2 className="text-[40px] font-light tracking-tight text-[var(--text-primary)]">
+                No logs
+              </h2>
+              <p className="text-body text-[var(--text-secondary)]">
+                Tap below to start tracking
+              </p>
+            </div>
           )}
         </div>
 
-        {/* Start Feeding Button */}
+        {/* Start Button */}
         <button
           onClick={handleStartFeeding}
-          className="w-52 h-52 rounded-full border border-amber-500/10 bg-amber-500/5 text-amber-500 active:scale-95 transition-all duration-300 shadow-[0_0_50px_rgba(255,159,10,0.03)] flex flex-col items-center justify-center space-y-3 cursor-pointer"
+          className="relative group cursor-pointer"
         >
-          <span className="text-4xl">🤱</span>
-          <span className="font-semibold text-lg tracking-tight">Start Feed</span>
+          <div className="absolute inset-0 bg-[var(--accent-orange)] rounded-full blur-xl opacity-20 group-active:opacity-40 transition-opacity" />
+          <div className="relative w-32 h-32 rounded-full bg-[var(--bg-surface-elevated)] flex flex-col items-center justify-center active:scale-95 transition-transform shadow-2xl border border-[var(--border-color)]">
+            <span className="text-4xl filter drop-shadow-md mb-1">🍼</span>
+            <span className="text-headline text-[var(--accent-orange)] mt-2">Start</span>
+          </div>
         </button>
       </div>
 
-      {/* Recents list */}
-      <div className="space-y-4 w-full mt-auto">
-        <div className="flex items-center justify-between">
-          <span className="text-caption-caps">Recent activity</span>
-          <button
-            onClick={() => onNavigate('history')}
-            className="text-caption text-amber-500/90 active:opacity-60 transition-opacity font-semibold cursor-pointer"
-          >
-            See all
-          </button>
-        </div>
-
-        <div className="space-y-3">
-          {sessions.slice(0, 3).map((session) => (
-            <div
-              key={session.id}
-              className="premium-card flex items-center justify-between"
+      {/* Recent Activity List Preview */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between px-1">
+          <h3 className="text-headline text-[var(--text-primary)]">Recent</h3>
+          {sessions.length > 0 && (
+            <button
+              onClick={() => {
+                triggerHaptic(5);
+                onNavigate('history');
+              }}
+              className="text-body text-[var(--accent-orange)] active:opacity-60 cursor-pointer"
             >
-              <div className="flex items-center space-x-4">
-                <span className="text-2xl bg-neutral-900 w-12 h-12 rounded-xl flex items-center justify-center">
-                  {getFeedTypeIcon(session.type)}
-                </span>
-                <div>
-                  <p className="text-body font-semibold text-neutral-100 capitalize">
-                    {getSideText(session)}
-                  </p>
-                  <p className="text-caption">
-                    {new Date(session.started_at).toLocaleTimeString(undefined, {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                    })}
-                    {session.recorded_by && ` • ${session.recorded_by}`}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                {session.volume_ml ? (
-                  <p className="text-body font-bold text-neutral-200">{session.volume_ml}ml</p>
-                ) : (
-                  <p className="text-body font-bold text-neutral-200">{getDurationText(session)}</p>
-                )}
-              </div>
-            </div>
-          ))}
-
-          {sessions.length === 0 && !isLoading && (
-            <div className="text-center py-8 text-caption text-neutral-600">
-              Tap above to record your first session.
-            </div>
+              See All
+            </button>
           )}
         </div>
 
-        {/* Quick Add Quick Actions Panel */}
+        {sessions.length === 0 && !isLoading ? (
+          <div className="premium-card py-10 text-center">
+            <p className="text-body text-[var(--text-secondary)]">
+              Your feeding history will appear here
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {sessions.slice(0, 3).map((session) => (
+              <div
+                key={session.id}
+                className="premium-card flex items-center justify-between"
+              >
+                <div className="flex items-center space-x-4">
+                  <span className="text-2xl w-10 h-10 flex items-center justify-center bg-[var(--bg-base)] rounded-xl">
+                    {getFeedTypeIcon(session.type)}
+                  </span>
+                  <div>
+                    <p className="text-headline capitalize text-[var(--text-primary)]">
+                      {getSideText(session)}
+                    </p>
+                    <p className="text-caption mt-1">
+                      {new Date(session.started_at).toLocaleTimeString(undefined, {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      })}
+                      {session.recorded_by && ` • ${session.recorded_by}`}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  {session.volume_ml ? (
+                    <p className="text-headline text-[var(--text-primary)]">{session.volume_ml}ml</p>
+                  ) : (
+                    <p className="text-headline text-[var(--text-primary)]">{getDurationText(session)}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         <button
           onClick={() => {
-            triggerHaptic(5);
+            triggerHaptic(10);
             onNavigate('quickadd');
           }}
-          className="w-full text-center py-4.5 bg-neutral-900/60 border border-dashed border-neutral-800 text-caption font-semibold rounded-2xl text-neutral-400 active:bg-neutral-900 transition-colors cursor-pointer"
+          className="btn-secondary mt-2"
         >
-          + Quick Record Entry
+          Quick Add Manual Log
         </button>
       </div>
     </div>

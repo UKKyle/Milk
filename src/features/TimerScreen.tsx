@@ -147,19 +147,19 @@ export function TimerScreen({ onBack }: TimerProps) {
       <div className="flex items-center justify-between py-3">
         <button
           onClick={onBack}
-          className="text-caption text-neutral-400 active:opacity-60 transition-opacity cursor-pointer"
+          className="text-body text-[var(--accent-orange)] active:opacity-60 transition-opacity cursor-pointer"
         >
-          ✕ Cancel
+          Cancel
         </button>
-        <span className="text-caption-caps text-amber-500">
+        <span className="text-headline text-[var(--text-primary)]">
           Feeding Session
         </span>
-        <div className="w-10" /> {/* Spacer */}
+        <div className="w-16" /> {/* Spacer */}
       </div>
 
       {/* Main Timer Display */}
       <div className="my-auto text-center space-y-12">
-        <div className="text-timer text-neutral-100">{formatTime(seconds)}</div>
+        <div className="text-timer">{formatTime(seconds)}</div>
 
         {/* Side Selector Buttons (Pill Selector Style) */}
         <div className="pill-selector max-w-[280px] mx-auto">
@@ -184,19 +184,19 @@ export function TimerScreen({ onBack }: TimerProps) {
           onClick={handlePauseToggle}
           className="btn-secondary"
         >
-          {isPaused ? '▶ Resume Feeding' : '⏸ Pause'}
+          {isPaused ? 'Resume Feeding' : 'Pause'}
         </button>
 
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={handleDiscard}
-            className="py-4 bg-red-950/20 border border-red-900/30 text-red-400 font-semibold rounded-2xl active:bg-red-950/40 transition-colors cursor-pointer"
+            className="py-4 bg-[#ff453a20] text-[var(--accent-red)] font-semibold rounded-[14px] active:bg-[#ff453a40] transition-colors cursor-pointer text-[17px] tracking-tight"
           >
             Discard
           </button>
           <button
             onClick={handleSave}
-            className="btn-primary py-4 font-semibold"
+            className="btn-primary"
           >
             Save Session
           </button>

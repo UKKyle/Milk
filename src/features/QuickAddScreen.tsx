@@ -59,12 +59,12 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
       <div className="flex items-center justify-between py-3">
         <button
           onClick={onBack}
-          className="text-caption text-neutral-400 active:opacity-60 transition-opacity cursor-pointer"
+          className="text-body text-[var(--accent-orange)] active:opacity-60 transition-opacity cursor-pointer"
         >
-          ✕ Cancel
+          Cancel
         </button>
-        <span className="text-caption-caps text-amber-500">Quick Record</span>
-        <div className="w-10" />
+        <span className="text-headline text-[var(--text-primary)]">Quick Record</span>
+        <div className="w-16" />
       </div>
 
       <form onSubmit={handleSave} className="flex-1 flex flex-col justify-center space-y-8 w-full py-6">
@@ -112,21 +112,21 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
 
         {/* Volume stepper */}
         {(type === 'bottle' || type === 'pump') && (
-          <div className="space-y-3">
-            <label className="text-caption-caps block pl-1">Volume (ml)</label>
+          <div className="space-y-2.5">
+            <label className="text-caption uppercase tracking-wider text-[var(--text-secondary)] block pl-1">Volume (ml)</label>
             <div className="premium-card flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => { triggerHaptic(5); setVolume(v => Math.max(10, v - 10)); }}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-100 text-xl font-light active:scale-90 transition-transform cursor-pointer"
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] text-xl font-light active:scale-90 transition-transform cursor-pointer border border-[var(--border-color)]"
               >
                 −
               </button>
-              <span className="text-3xl font-light text-neutral-100 tabular-nums">{volume}<span className="text-lg text-neutral-500 ml-1">ml</span></span>
+              <span className="text-large-title tabular-nums">{volume}<span className="text-body text-[var(--text-secondary)] ml-1">ml</span></span>
               <button
                 type="button"
                 onClick={() => { triggerHaptic(5); setVolume(v => v + 10); }}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-100 text-xl font-light active:scale-90 transition-transform cursor-pointer"
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] text-xl font-light active:scale-90 transition-transform cursor-pointer border border-[var(--border-color)]"
               >
                 +
               </button>
@@ -136,21 +136,21 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
 
         {/* Duration stepper */}
         {(type === 'pump' || isBreast) && (
-          <div className="space-y-3">
-            <label className="text-caption-caps block pl-1">Duration</label>
+          <div className="space-y-2.5">
+            <label className="text-caption uppercase tracking-wider text-[var(--text-secondary)] block pl-1">Duration</label>
             <div className="premium-card flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => { triggerHaptic(5); setDurationMins(d => Math.max(1, d - 1)); }}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-100 text-xl font-light active:scale-90 transition-transform cursor-pointer"
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] text-xl font-light active:scale-90 transition-transform cursor-pointer border border-[var(--border-color)]"
               >
                 −
               </button>
-              <span className="text-3xl font-light text-neutral-100 tabular-nums">{durationMins}<span className="text-lg text-neutral-500 ml-1">min</span></span>
+              <span className="text-large-title tabular-nums">{durationMins}<span className="text-body text-[var(--text-secondary)] ml-1">min</span></span>
               <button
                 type="button"
                 onClick={() => { triggerHaptic(5); setDurationMins(d => d + 1); }}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-100 text-xl font-light active:scale-90 transition-transform cursor-pointer"
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] text-xl font-light active:scale-90 transition-transform cursor-pointer border border-[var(--border-color)]"
               >
                 +
               </button>
@@ -159,8 +159,8 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
         )}
 
         {/* Notes */}
-        <div className="space-y-3">
-          <label className="text-caption-caps block pl-1">Notes (optional)</label>
+        <div className="space-y-2.5">
+          <label className="text-caption uppercase tracking-wider text-[var(--text-secondary)] block pl-1">Notes (optional)</label>
           <input
             type="text"
             placeholder="Add details..."
