@@ -71,18 +71,40 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
       </div>
 
       <form onSubmit={handleSave} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        {/* Volume Stepper */}
+        {/* Volume Stepper / Input */}
         <div style={{ marginBottom: 32 }}>
-          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>Volume</p>
+          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>Volume (ml)</p>
           <div className="ios-list-group" style={{ marginBottom: 0 }}>
             <div className="ios-list-item" style={{ cursor: 'default', justifyContent: 'space-between' }}>
-              <button type="button" onClick={() => { triggerHaptic(5); setVolume((v) => Math.max(10, v - 10)); }} style={{ width: 44, height: 44, borderRadius: 22, background: 'var(--bg-base)', border: '0.5px solid var(--border-color)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <button type="button" onClick={() => { triggerHaptic(5); setVolume((v) => Math.max(0, v - 10)); }} style={{ width: 44, height: 44, borderRadius: 22, background: 'var(--bg-base)', border: '0.5px solid var(--border-color)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                 <Minus size={18} strokeWidth={1.5} />
               </button>
-              <span style={{ fontSize: 44, fontWeight: 200, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
-                {volume}
-                <span style={{ fontSize: 20, fontWeight: 300, color: 'var(--text-secondary)', marginLeft: 4 }}>ml</span>
-              </span>
+              
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  value={volume || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setVolume(val === '' ? 0 : parseInt(val, 10));
+                  }}
+                  style={{
+                    fontSize: 44,
+                    fontWeight: 200,
+                    color: 'var(--text-primary)',
+                    fontVariantNumeric: 'tabular-nums',
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    textAlign: 'center',
+                    width: '100px',
+                    padding: 0,
+                    margin: 0,
+                  }}
+                />
+              </div>
+
               <button type="button" onClick={() => { triggerHaptic(5); setVolume((v) => v + 10); }} style={{ width: 44, height: 44, borderRadius: 22, background: 'var(--bg-base)', border: '0.5px solid var(--border-color)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                 <PlusIcon size={18} strokeWidth={1.5} />
               </button>

@@ -157,10 +157,31 @@ export function TimerScreen({ onBack }: TimerProps) {
             >
               <Minus size={18} strokeWidth={1.5} />
             </button>
-            <span style={{ fontSize: 34, fontWeight: 200, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
-              {volume}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <input
+                type="number"
+                inputMode="numeric"
+                value={volume || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setVolume(val === '' ? 0 : parseInt(val, 10));
+                }}
+                style={{
+                  fontSize: 34,
+                  fontWeight: 200,
+                  color: 'var(--text-primary)',
+                  fontVariantNumeric: 'tabular-nums',
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  textAlign: 'center',
+                  width: '80px',
+                  padding: 0,
+                  margin: 0,
+                }}
+              />
               <span style={{ fontSize: 17, fontWeight: 300, color: 'var(--text-secondary)', marginLeft: 4 }}>ml</span>
-            </span>
+            </div>
             <button
               type="button"
               onClick={() => { triggerHaptic(5); setVolume((v) => v + 10); }}
