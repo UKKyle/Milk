@@ -47,14 +47,17 @@ export function WelcomeScreen() {
       <div />
 
       {/* Hero Header */}
-      <div className="space-y-3 text-center my-auto">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-[24px] bg-amber-500/10 text-amber-500 mb-6">
-          <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+      <div className="space-y-4 text-center my-auto">
+        <div className="relative inline-flex items-center justify-center w-24 h-24 mb-4">
+          {/* Soft glow background */}
+          <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-xl animate-pulse" />
+          {/* Main icon container */}
+          <div className="relative flex items-center justify-center w-20 h-20 rounded-[24px] bg-neutral-900 border border-neutral-800 shadow-2xl">
+            <span className="text-4xl filter drop-shadow-md">🍼</span>
+          </div>
         </div>
         <h1 className="text-title tracking-tight text-neutral-100">Milk Tracker</h1>
-        <p className="text-body text-neutral-400 max-w-[280px] mx-auto">
+        <p className="text-body text-neutral-400 max-w-[280px] mx-auto leading-relaxed">
           A calm, shared feeding space for you and your partner.
         </p>
       </div>
