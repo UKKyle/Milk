@@ -68,13 +68,13 @@ export function SessionRecoveryScreen({ onResume, onDiscard }: RecoveryProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-center px-6 max-w-sm mx-auto w-full text-center space-y-8">
-      <div className="space-y-3">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 text-amber-500 mb-4 animate-pulse">
+    <div className="safe-area-container justify-center max-w-sm mx-auto w-full text-center space-y-8">
+      <div className="space-y-4">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/10 text-amber-500 text-3xl mb-4 animate-pulse">
           🤱
         </div>
         <h1 className="text-title">You were feeding</h1>
-        <p className="text-body text-neutral-300 capitalize">
+        <p className="text-body font-medium text-neutral-300 capitalize">
           {activeTimer.side} side
         </p>
         <p className="text-caption">
@@ -82,7 +82,7 @@ export function SessionRecoveryScreen({ onResume, onDiscard }: RecoveryProps) {
         </p>
       </div>
 
-      <div className="space-y-3 pt-6">
+      <div className="space-y-4 pt-6">
         <button
           onClick={onResume}
           className="w-full btn-primary block text-center cursor-pointer"
@@ -91,7 +91,7 @@ export function SessionRecoveryScreen({ onResume, onDiscard }: RecoveryProps) {
         </button>
         <button
           onClick={handleEndSession}
-          className="w-full py-4 bg-neutral-900 border border-neutral-800 text-body font-medium rounded-2xl active:bg-neutral-800 transition-colors cursor-pointer"
+          className="btn-secondary w-full py-4 text-body cursor-pointer"
         >
           End Session Now
         </button>

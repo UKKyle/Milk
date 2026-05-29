@@ -101,26 +101,26 @@ export function SettingsScreen({ onBack }: SettingsProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between p-6 max-w-md mx-auto w-full">
+    <div className="safe-area-container max-w-md mx-auto justify-between py-6">
       {/* Top Bar */}
-      <div className="flex items-center justify-between py-2 mb-4">
+      <div className="flex items-center justify-between py-3 mb-6">
         <button
           onClick={onBack}
-          className="text-caption text-neutral-400 active:opacity-60 transition-opacity"
+          className="text-caption text-neutral-400 active:opacity-60 transition-opacity cursor-pointer"
         >
           ✕ Back
         </button>
-        <span className="text-caption uppercase tracking-wider text-amber-500 font-medium">
+        <span className="text-caption-caps text-amber-500">
           Settings
         </span>
         <div className="w-10" />
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-6 pr-1">
+      <div className="flex-1 overflow-y-auto space-y-8 pr-1 pb-10">
         {/* Sync Info */}
-        <div className="premium-card p-4 space-y-2 border border-neutral-900">
+        <div className="premium-card space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-body font-medium text-neutral-200">Family Code</span>
+            <span className="text-body font-medium">Family Code</span>
             <span className="text-body font-bold text-amber-500 tracking-wider uppercase">
               {familyCode}
             </span>
@@ -139,20 +139,20 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         </div>
 
         {/* Profile Settings */}
-        <div className="space-y-2">
-          <label className="text-caption text-neutral-500 uppercase tracking-wider block">
+        <div className="space-y-3">
+          <label className="text-caption-caps block pl-1">
             Partner Name
           </label>
-          <div className="flex space-x-2">
+          <div className="flex space-x-3">
             <input
               type="text"
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
-              className="flex-1 bg-neutral-900/50 border border-neutral-800 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:border-amber-500/50"
+              className="premium-input flex-1 text-left"
             />
             <button
               onClick={handleSaveName}
-              className="bg-neutral-850 border border-neutral-800 text-caption font-semibold px-4 rounded-xl active:bg-neutral-800"
+              className="btn-secondary w-auto px-6"
             >
               Update
             </button>
@@ -160,22 +160,22 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         </div>
 
         {/* Export Data */}
-        <div className="space-y-2.5">
-          <label className="text-caption text-neutral-500 uppercase tracking-wider block">
+        <div className="space-y-3">
+          <label className="text-caption-caps block pl-1">
             Data & Backup management
           </label>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={handleExportCSV}
-              className="py-3 bg-neutral-900/40 border border-neutral-800 rounded-xl text-caption text-neutral-200 active:bg-neutral-800"
+              className="btn-secondary py-3 text-caption font-semibold"
             >
-              Export CSV Logs
+              Export CSV
             </button>
             <button
               onClick={handleExportJSON}
-              className="py-3 bg-neutral-900/40 border border-neutral-800 rounded-xl text-caption text-neutral-200 active:bg-neutral-800"
+              className="btn-secondary py-3 text-caption font-semibold"
             >
-              Export JSON Backup
+              Export JSON
             </button>
           </div>
 
@@ -190,12 +190,12 @@ export function SettingsScreen({ onBack }: SettingsProps) {
             <button
               onClick={handleImportClick}
               disabled={isImporting}
-              className="w-full py-3 bg-amber-500/5 border border-dashed border-amber-500/20 text-caption text-amber-500 rounded-xl active:bg-amber-500/10 cursor-pointer"
+              className="w-full py-4 bg-amber-500/10 text-caption font-semibold text-amber-500 rounded-2xl active:bg-amber-500/20 transition-colors cursor-pointer"
             >
               {isImporting ? 'Importing database records...' : '↑ Import JSON Backup'}
             </button>
             {importStatus && (
-              <p className="text-caption text-center text-amber-500/80 mt-2 bg-amber-950/10 py-2 rounded-xl">
+              <p className="text-caption text-center text-amber-500/80 mt-3 bg-amber-950/20 py-2.5 rounded-xl border border-amber-900/30">
                 {importStatus}
               </p>
             )}
@@ -203,13 +203,13 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         </div>
 
         {/* Maintenance */}
-        <div className="space-y-2">
-          <label className="text-caption text-neutral-500 uppercase tracking-wider block">
+        <div className="space-y-3">
+          <label className="text-caption-caps block pl-1 text-red-500">
             Danger Zone
           </label>
           <button
             onClick={handleClearCache}
-            className="w-full text-left py-3.5 px-4 bg-red-950/10 border border-red-950 text-caption text-red-400 rounded-xl active:bg-red-950/20 cursor-pointer"
+            className="w-full text-left py-4 px-5 bg-red-950/20 border border-red-950 text-body font-semibold text-red-400 rounded-2xl active:bg-red-950/30 transition-colors cursor-pointer"
           >
             Clear Offline Database Cache
           </button>
@@ -219,7 +219,7 @@ export function SettingsScreen({ onBack }: SettingsProps) {
       {/* Logout button */}
       <button
         onClick={handleLogout}
-        className="w-full text-center py-4 bg-red-950/20 border border-red-900/35 text-body font-semibold text-red-400 rounded-2xl active:bg-red-950/40 mt-6 cursor-pointer"
+        className="w-full text-center py-4 bg-red-950/30 text-body font-semibold text-red-400 rounded-3xl active:bg-red-950/40 mt-6 transition-colors cursor-pointer"
       >
         Leave Family Sync Space
       </button>

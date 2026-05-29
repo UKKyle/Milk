@@ -2,110 +2,195 @@
 
 @layer base {
   :root {
-    --background: 13 13 13; /* #0d0d0d */
-    --foreground: 242 242 247;
-    --card: 28 28 30;
-    --card-foreground: 242 242 247;
-    --primary: 255 159 10; /* Soft Amber */
-    --primary-foreground: 13 13 13;
-    --accent: 142 142 147;
-    --border: 38 38 40;
+    --bg-base: #000000;
+    --bg-surface: #1c1c1e;
+    --bg-surface-elevated: #2c2c2e;
+    --accent-orange: #ff9f0a;
+    --accent-orange-rgb: 255, 159, 10;
+    --text-primary: #ffffff;
+    --text-secondary: #8e8e93;
+    --text-tertiary: #48484a;
+    --border-color: #2c2c2e;
     
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
-    color-scheme: dark;
-    background-color: rgb(var(--background));
-    color: rgb(var(--foreground));
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overscroll-behavior-y: contain; /* Prevent browser bounce */
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none; /* Prevent elastic bounce in browser */
   }
 
   body {
     margin: 0;
     padding: 0;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
     min-height: 100vh;
+    min-height: -webkit-fill-available;
     display: flex;
     flex-direction: column;
-    background-color: rgb(var(--background));
-    color: rgb(var(--foreground));
+    overflow-x: hidden;
+  }
+
+  input, button {
+    font-family: inherit;
   }
 }
 
-/* Apple typography helpers */
+/* Apple Pro-Level Minimalist Design Guidelines */
+
+/* Main Containers */
+.safe-area-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  padding-top: env(safe-area-inset-top, 24px);
+  padding-bottom: env(safe-area-inset-bottom, 24px);
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Premium Typography Elements */
 .text-timer {
-  font-size: 64px;
-  font-weight: 200;
-  letter-spacing: -0.02em;
+  font-size: 80px;
+  font-weight: 100;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
-  line-height: 1.1;
+  line-height: 1;
+  color: var(--text-primary);
 }
 
 .text-title {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
 
 .text-body {
   font-size: 16px;
   font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
 }
 
 .text-caption {
   font-size: 13px;
-  font-weight: 400;
-  color: rgb(var(--accent));
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--text-secondary);
 }
 
-/* Dynamic design interactive cards */
+.text-caption-caps {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* Cards (Apple Health-like Premium Cards) */
 .premium-card {
-  background: rgba(28, 28, 30, 0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: var(--bg-surface);
   border-radius: 16px;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+  border: none;
+  padding: 16px;
+  transition: background-color 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .premium-card:active {
-  transform: scale(0.98);
-  background: rgba(28, 28, 30, 0.8);
+  background-color: var(--bg-surface-elevated);
+  transform: scale(0.985);
 }
 
+/* Premium Button Styling */
 .btn-primary {
-  background-color: rgb(var(--primary));
-  color: rgb(var(--primary-foreground));
+  background-color: var(--accent-orange);
+  color: #000000;
   font-weight: 600;
-  border-radius: 9999px;
-  padding: 14px 24px;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  border-radius: 28px;
+  padding: 16px 24px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
   transition: opacity 0.2s ease, transform 0.1s ease;
+  cursor: pointer;
 }
 
 .btn-primary:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
   opacity: 0.9;
 }
 
 .btn-secondary {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: rgb(var(--foreground));
-  border-radius: 9999px;
-  padding: 14px 24px;
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: 28px;
+  padding: 16px 24px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
   transition: background-color 0.2s ease, transform 0.1s ease;
+  cursor: pointer;
 }
 
 .btn-secondary:active {
-  transform: scale(0.97);
-  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(0.98);
+  background-color: var(--bg-surface-elevated);
 }
 
-/* Animate layout transitions gently */
-.fade-in-enter {
-  opacity: 0;
-  transform: translateY(8px);
+/* Quick Switch Pill Selectors */
+.pill-selector {
+  display: flex;
+  background-color: var(--bg-surface);
+  border-radius: 12px;
+  padding: 3px;
+  border: none;
 }
-.fade-in-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+.pill-option {
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 9px;
+  border: none;
+  color: var(--text-secondary);
+  background-color: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
 }
+
+.pill-option-active {
+  background-color: var(--bg-surface-elevated);
+  color: var(--accent-orange);
+}
+
+/* Custom Clean Input Form elements */
+.premium-input {
+  width: 100%;
+  background-color: var(--bg-surface);
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 16px;
+  color: var(--text-primary);
+  text-align: center;
+  transition: background-color 0.2s ease;
+}
+
+.premium-input:focus {
+  outline: none;
+  background-color: var(--bg-surface-elevated);
+}
+

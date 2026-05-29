@@ -73,16 +73,16 @@ export function HistoryScreen({ onBack }: HistoryProps) {
   const dayGroups = groupSessionsByDay(sessions);
 
   return (
-    <div className="flex-1 flex flex-col justify-between p-6 max-w-md mx-auto w-full">
+    <div className="safe-area-container max-w-md mx-auto justify-between py-6">
       {/* Top Bar */}
-      <div className="flex items-center justify-between py-2 mb-4">
+      <div className="flex items-center justify-between py-3 mb-4">
         <button
           onClick={onBack}
-          className="text-caption text-neutral-400 active:opacity-60 transition-opacity"
+          className="text-caption text-neutral-400 active:opacity-60 transition-opacity cursor-pointer"
         >
           ✕ Back
         </button>
-        <span className="text-caption uppercase tracking-wider text-amber-500 font-medium">
+        <span className="text-caption-caps text-amber-500">
           Feeding History
         </span>
         <div className="w-10" />
@@ -90,7 +90,7 @@ export function HistoryScreen({ onBack }: HistoryProps) {
 
       {isLoading ? (
         <div className="my-auto flex items-center justify-center">
-          <div className="w-6 h-6 rounded-full border-2 border-neutral-800 border-t-amber-500 animate-spin" />
+          <div className="w-6 h-6 rounded-full border-2 border-neutral-900 border-t-amber-500 animate-spin" />
         </div>
       ) : dayGroups.length === 0 ? (
         <div className="my-auto text-center space-y-2">
@@ -98,26 +98,28 @@ export function HistoryScreen({ onBack }: HistoryProps) {
           <p className="text-caption">Your logged sessions will appear here.</p>
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto space-y-6 pr-1">
+        <div className="flex-1 overflow-y-auto space-y-6 pr-1 pb-10">
           {dayGroups.map(([day, items]) => (
-            <div key={day} className="space-y-2.5">
-              <h3 className="text-caption text-neutral-500 font-medium sticky top-0 bg-neutral-950/80 backdrop-blur-sm py-1.5 z-10">
+            <div key={day} className="space-y-3">
+              <h3 className="text-caption-caps sticky top-0 bg-black/80 backdrop-blur-md py-2 z-10">
                 {day}
               </h3>
               
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {items.map((session) => (
                   <div
                     key={session.id}
-                    className="premium-card p-4 flex items-center justify-between border border-neutral-900/50 relative group"
+                    className="premium-card flex items-center justify-between relative group"
                   >
-                    <div className="flex items-center space-x-3">
-                      <span className="text-xl">{getFeedTypeIcon(session.type)}</span>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-2xl bg-neutral-900 w-12 h-12 rounded-xl flex items-center justify-center">
+                        {getFeedTypeIcon(session.type)}
+                      </span>
                       <div>
-                        <p className="text-body font-normal text-neutral-200">
+                        <p className="text-body font-semibold text-neutral-100 capitalize">
                           {getSideText(session)}
                         </p>
-                        <p className="text-caption text-neutral-500">
+                        <p className="text-caption mt-0.5">
                           {new Date(session.started_at).toLocaleTimeString(undefined, {
                             hour: 'numeric',
                             minute: '2-digit',
@@ -125,26 +127,26 @@ export function HistoryScreen({ onBack }: HistoryProps) {
                           {session.recorded_by && ` • ${session.recorded_by}`}
                         </p>
                         {session.notes && (
-                          <p className="text-caption italic text-neutral-400 mt-1">
+                          <p className="text-caption italic text-neutral-400 mt-1.5">
                             "{session.notes}"
                           </p>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-3.5">
-                      <div className="text-right">
-                        {session.volume_ml ? (
-                          <p className="text-body font-medium text-neutral-300">{session.volume_ml}ml</p>
-                        ) : (
-                          <p className="text-body font-medium text-neutral-300">{getDurationText(session)}</p>
-                        )}
-                      </div>
+                    <div className="flex flex-col items-end justify-between h-full space-y-2">
+                      {session.volume_ml ? (
+                        <p className="text-body font-bold text-neutral-200">{session.volume_ml}ml</p>
+                      ) : (
+                        <p className="text-body font-bold text-neutral-200">{getDurationText(session)}</p>
+                      )}
                       <button
                         onClick={() => handleDelete(session.id)}
-                        className="text-red-500/75 hover:text-red-400 p-1.5 active:scale-90 transition-transform cursor-pointer"
+                        className="text-red-500/80 hover:text-red-400 active:scale-90 transition-transform cursor-pointer"
                         title="Delete log"
                       >
-                        🗑️
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </div>
                   </div>

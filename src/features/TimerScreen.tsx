@@ -142,44 +142,36 @@ export function TimerScreen({ onBack }: TimerProps) {
   const isPaused = activeTimer?.pausedAt;
 
   return (
-    <div className="flex-1 flex flex-col justify-between p-6 max-w-md mx-auto w-full">
+    <div className="safe-area-container max-w-md mx-auto justify-between py-6">
       {/* Top Bar */}
-      <div className="flex items-center justify-between py-2">
+      <div className="flex items-center justify-between py-3">
         <button
           onClick={onBack}
-          className="text-caption text-neutral-400 active:opacity-60 transition-opacity"
+          className="text-caption text-neutral-400 active:opacity-60 transition-opacity cursor-pointer"
         >
           ✕ Cancel
         </button>
-        <span className="text-caption uppercase tracking-wider text-amber-500 font-medium">
+        <span className="text-caption-caps text-amber-500">
           Feeding Session
         </span>
         <div className="w-10" /> {/* Spacer */}
       </div>
 
       {/* Main Timer Display */}
-      <div className="my-auto text-center space-y-10">
+      <div className="my-auto text-center space-y-12">
         <div className="text-timer text-neutral-100">{formatTime(seconds)}</div>
 
-        {/* Side Selector Buttons */}
-        <div className="inline-flex bg-neutral-900/60 p-1.5 rounded-2xl border border-neutral-800">
+        {/* Side Selector Buttons (Pill Selector Style) */}
+        <div className="pill-selector max-w-[280px] mx-auto">
           <button
             onClick={() => handleSideSwitch('left')}
-            className={`px-8 py-3 rounded-xl text-body font-medium transition-all ${
-              selectedSide === 'left'
-                ? 'bg-amber-500 text-neutral-900 shadow-md'
-                : 'text-neutral-400 active:text-neutral-200'
-            }`}
+            className={`pill-option ${selectedSide === 'left' ? 'pill-option-active' : ''}`}
           >
             Left Side
           </button>
           <button
             onClick={() => handleSideSwitch('right')}
-            className={`px-8 py-3 rounded-xl text-body font-medium transition-all ${
-              selectedSide === 'right'
-                ? 'bg-amber-500 text-neutral-900 shadow-md'
-                : 'text-neutral-400 active:text-neutral-200'
-            }`}
+            className={`pill-option ${selectedSide === 'right' ? 'pill-option-active' : ''}`}
           >
             Right Side
           </button>
@@ -187,10 +179,10 @@ export function TimerScreen({ onBack }: TimerProps) {
       </div>
 
       {/* Actions */}
-      <div className="space-y-4">
+      <div className="space-y-4 w-full mt-auto">
         <button
           onClick={handlePauseToggle}
-          className="w-full text-center py-4 bg-neutral-900 border border-neutral-800 text-body font-medium rounded-2xl active:bg-neutral-800 transition-colors"
+          className="btn-secondary"
         >
           {isPaused ? '▶ Resume Feeding' : '⏸ Pause'}
         </button>
@@ -198,13 +190,13 @@ export function TimerScreen({ onBack }: TimerProps) {
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={handleDiscard}
-            className="py-4 bg-red-950/15 border border-red-900/30 text-red-400 font-medium rounded-2xl active:bg-red-950/30 transition-colors"
+            className="py-4 bg-red-950/20 border border-red-900/30 text-red-400 font-semibold rounded-2xl active:bg-red-950/40 transition-colors cursor-pointer"
           >
             Discard
           </button>
           <button
             onClick={handleSave}
-            className="py-4 bg-amber-500 text-neutral-900 font-semibold rounded-2xl active:opacity-90 transition-opacity"
+            className="btn-primary py-4 font-semibold"
           >
             Save Session
           </button>

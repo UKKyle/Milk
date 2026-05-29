@@ -69,10 +69,10 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between p-6 max-w-md mx-auto w-full">
+    <div className="safe-area-container max-w-md mx-auto justify-between py-6">
       {/* Header */}
-      <div className="flex items-center justify-between py-2">
-        <h1 className="text-title tracking-tight font-semibold">Today</h1>
+      <div className="flex items-center justify-between py-3">
+        <h1 className="text-title tracking-tight text-neutral-100">Today</h1>
         <div className="flex items-center space-x-3">
           {syncStatus.failedCount > 0 && (
             <span className="text-red-400 text-caption animate-pulse">
@@ -84,7 +84,7 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
               triggerHaptic(5);
               onNavigate('settings');
             }}
-            className="w-10 h-10 rounded-full flex items-center justify-center bg-neutral-900 border border-neutral-800 text-neutral-400 active:scale-95 transition-transform"
+            className="w-11 h-11 rounded-full flex items-center justify-center bg-neutral-900 text-lg active:scale-95 transition-transform cursor-pointer"
           >
             ⚙️
           </button>
@@ -92,20 +92,20 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
       </div>
 
       {/* Hero Last Feed Block */}
-      <div className="my-auto py-10 space-y-12">
-        <div className="text-center space-y-2">
-          <p className="text-caption uppercase tracking-wider text-neutral-500">Last feed</p>
+      <div className="my-auto py-8 space-y-10 flex flex-col items-center">
+        <div className="text-center space-y-2.5">
+          <p className="text-caption-caps">Last feed</p>
           {isLoading ? (
             <div className="h-16 flex items-center justify-center">
-              <div className="w-5 h-5 rounded-full border-2 border-neutral-800 border-t-amber-500 animate-spin" />
+              <div className="w-6 h-6 rounded-full border-2 border-neutral-900 border-t-amber-500 animate-spin" />
             </div>
           ) : lastFeed ? (
             <div className="space-y-1">
-              <h2 className="text-2xl font-light text-neutral-200">
+              <h2 className="text-3xl font-light text-neutral-100 tracking-tight">
                 {getSideText(lastFeed)}
                 {getDurationText(lastFeed) && ` • ${getDurationText(lastFeed)}`}
               </h2>
-              <p className="text-caption text-neutral-400">{getFeedTimeText(lastFeed.started_at)}</p>
+              <p className="text-body text-neutral-400">{getFeedTimeText(lastFeed.started_at)}</p>
             </div>
           ) : (
             <p className="text-body text-neutral-500">No feeds recorded yet</p>
@@ -113,42 +113,42 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
         </div>
 
         {/* Start Feeding Button */}
-        <div className="flex justify-center">
-          <button
-            onClick={handleStartFeeding}
-            className="w-48 h-48 rounded-full border border-amber-500/10 bg-amber-500/5 text-amber-500 text-title font-light active:scale-95 transition-all duration-300 shadow-[0_0_40px_rgba(245,158,11,0.02)] flex flex-col items-center justify-center space-y-2 hover:bg-amber-500/10 cursor-pointer"
-          >
-            <span>🤱</span>
-            <span className="font-medium text-lg">Start Feed</span>
-          </button>
-        </div>
+        <button
+          onClick={handleStartFeeding}
+          className="w-52 h-52 rounded-full border border-amber-500/10 bg-amber-500/5 text-amber-500 active:scale-95 transition-all duration-300 shadow-[0_0_50px_rgba(255,159,10,0.03)] flex flex-col items-center justify-center space-y-3 cursor-pointer"
+        >
+          <span className="text-4xl">🤱</span>
+          <span className="font-semibold text-lg tracking-tight">Start Feed</span>
+        </button>
       </div>
 
       {/* Recents list */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between text-caption text-neutral-500 uppercase tracking-wider font-medium">
-          <span>Recent activity</span>
+      <div className="space-y-4 w-full mt-auto">
+        <div className="flex items-center justify-between">
+          <span className="text-caption-caps">Recent activity</span>
           <button
             onClick={() => onNavigate('history')}
-            className="text-amber-500/80 active:opacity-60 transition-opacity lowercase font-normal"
+            className="text-caption text-amber-500/90 active:opacity-60 transition-opacity font-semibold cursor-pointer"
           >
             See all
           </button>
         </div>
 
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {sessions.slice(0, 3).map((session) => (
             <div
               key={session.id}
-              className="premium-card p-4 flex items-center justify-between text-body border border-neutral-900/50"
+              className="premium-card flex items-center justify-between"
             >
-              <div className="flex items-center space-x-3">
-                <span className="text-xl">{getFeedTypeIcon(session.type)}</span>
+              <div className="flex items-center space-x-4">
+                <span className="text-2xl bg-neutral-900 w-12 h-12 rounded-xl flex items-center justify-center">
+                  {getFeedTypeIcon(session.type)}
+                </span>
                 <div>
-                  <p className="text-body font-normal text-neutral-200 capitalize">
+                  <p className="text-body font-semibold text-neutral-100 capitalize">
                     {getSideText(session)}
                   </p>
-                  <p className="text-caption text-neutral-500">
+                  <p className="text-caption">
                     {new Date(session.started_at).toLocaleTimeString(undefined, {
                       hour: 'numeric',
                       minute: '2-digit',
@@ -159,16 +159,16 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
               </div>
               <div className="text-right">
                 {session.volume_ml ? (
-                  <p className="text-body font-medium text-neutral-300">{session.volume_ml}ml</p>
+                  <p className="text-body font-bold text-neutral-200">{session.volume_ml}ml</p>
                 ) : (
-                  <p className="text-body font-medium text-neutral-300">{getDurationText(session)}</p>
+                  <p className="text-body font-bold text-neutral-200">{getDurationText(session)}</p>
                 )}
               </div>
             </div>
           ))}
 
           {sessions.length === 0 && !isLoading && (
-            <div className="text-center py-6 text-caption text-neutral-600">
+            <div className="text-center py-8 text-caption text-neutral-600">
               Tap above to record your first session.
             </div>
           )}
@@ -180,9 +180,9 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
             triggerHaptic(5);
             onNavigate('quickadd');
           }}
-          className="w-full text-center py-4 bg-neutral-900/40 border border-dashed border-neutral-800 text-caption rounded-2xl text-neutral-400 active:bg-neutral-900 transition-colors"
+          className="w-full text-center py-4.5 bg-neutral-900/60 border border-dashed border-neutral-800 text-caption font-semibold rounded-2xl text-neutral-400 active:bg-neutral-900 transition-colors cursor-pointer"
         >
-          + Quick Add Bottle / Pump / Manual Feed
+          + Quick Record Entry
         </button>
       </div>
     </div>

@@ -43,7 +43,6 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
       updated_at: new Date().toISOString(),
     });
 
-    // Optimistic merge into TanStack Query cache directly
     queryClient.setQueryData(['sessions', familyId], (old: any) => {
       const list = old ? [...old] : [];
       return [newSession, ...list];
@@ -52,25 +51,25 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
     onBack();
   };
 
+  const isBreast = type === 'left' || type === 'right';
+
   return (
-    <div className="flex-1 flex flex-col justify-between p-6 max-w-md mx-auto w-full">
+    <div className="safe-area-container max-w-md mx-auto justify-between py-6">
       {/* Top Bar */}
-      <div className="flex items-center justify-between py-2">
+      <div className="flex items-center justify-between py-3">
         <button
           onClick={onBack}
-          className="text-caption text-neutral-400 active:opacity-60 transition-opacity"
+          className="text-caption text-neutral-400 active:opacity-60 transition-opacity cursor-pointer"
         >
           ✕ Cancel
         </button>
-        <span className="text-caption uppercase tracking-wider text-amber-500 font-medium">
-          Quick Record
-        </span>
+        <span className="text-caption-caps text-amber-500">Quick Record</span>
         <div className="w-10" />
       </div>
 
-      <form onSubmit={handleSave} className="my-auto space-y-6">
-        {/* Type selector */}
-        <div className="grid grid-cols-3 gap-2 bg-neutral-900/60 p-1.5 rounded-2xl border border-neutral-800">
+      <form onSubmit={handleSave} className="flex-1 flex flex-col justify-center space-y-8 w-full py-6">
+        {/* Type selector — pill style */}
+        <div className="pill-selector">
           {(['bottle', 'pump', 'left'] as const).map((t) => (
             <button
               key={t}
@@ -80,10 +79,10 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
                 setType(t);
                 if (t === 'left') setSide('left');
               }}
-              className={`py-3 rounded-xl text-caption capitalize font-medium transition-all ${
-                type === t || (t === 'left' && (type === 'left' || type === 'right'))
-                  ? 'bg-amber-500 text-neutral-900 shadow-md font-semibold'
-                  : 'text-neutral-400 active:text-neutral-200'
+              className={`pill-option ${
+                type === t || (t === 'left' && isBreast)
+                  ? 'pill-option-active'
+                  : ''
               }`}
             >
               {t === 'left' ? '🤱 Breast' : t === 'bottle' ? '🍼 Bottle' : '⚙️ Pump'}
@@ -91,9 +90,9 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
           ))}
         </div>
 
-        {/* Dynamic breast side selector */}
-        {(type === 'left' || type === 'right') && (
-          <div className="grid grid-cols-2 gap-2 bg-neutral-900/40 p-1 rounded-xl">
+        {/* Breast side sub-selector */}
+        {isBreast && (
+          <div className="pill-selector max-w-[240px] mx-auto">
             {(['left', 'right'] as const).map((s) => (
               <button
                 key={s}
@@ -103,43 +102,31 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
                   setType(s);
                   setSide(s);
                 }}
-                className={`py-2 rounded-lg text-caption capitalize font-medium transition-all ${
-                  type === s
-                    ? 'bg-neutral-800 text-amber-500 font-semibold'
-                    : 'text-neutral-500 active:text-neutral-300'
-                }`}
+                className={`pill-option capitalize ${type === s ? 'pill-option-active' : ''}`}
               >
-                {s} Side
+                {s}
               </button>
             ))}
           </div>
         )}
 
-        {/* Dynamic parameters inputs */}
+        {/* Volume stepper */}
         {(type === 'bottle' || type === 'pump') && (
-          <div className="space-y-2">
-            <label className="text-caption text-neutral-500 uppercase tracking-wider block">
-              Volume (ml)
-            </label>
-            <div className="flex items-center justify-between bg-neutral-900/40 px-4 py-3 rounded-xl border border-neutral-850">
+          <div className="space-y-3">
+            <label className="text-caption-caps block pl-1">Volume (ml)</label>
+            <div className="premium-card flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => {
-                  triggerHaptic(5);
-                  setVolume(v => Math.max(10, v - 10));
-                }}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-200 border border-neutral-800 text-lg"
+                onClick={() => { triggerHaptic(5); setVolume(v => Math.max(10, v - 10)); }}
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-100 text-xl font-light active:scale-90 transition-transform cursor-pointer"
               >
-                -
+                −
               </button>
-              <span className="text-2xl font-light text-neutral-200">{volume} ml</span>
+              <span className="text-3xl font-light text-neutral-100 tabular-nums">{volume}<span className="text-lg text-neutral-500 ml-1">ml</span></span>
               <button
                 type="button"
-                onClick={() => {
-                  triggerHaptic(5);
-                  setVolume(v => v + 10);
-                }}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-200 border border-neutral-800 text-lg"
+                onClick={() => { triggerHaptic(5); setVolume(v => v + 10); }}
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-100 text-xl font-light active:scale-90 transition-transform cursor-pointer"
               >
                 +
               </button>
@@ -147,30 +134,23 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
           </div>
         )}
 
-        {(type === 'pump' || type === 'left' || type === 'right') && (
-          <div className="space-y-2">
-            <label className="text-caption text-neutral-500 uppercase tracking-wider block">
-              Duration (minutes)
-            </label>
-            <div className="flex items-center justify-between bg-neutral-900/40 px-4 py-3 rounded-xl border border-neutral-850">
+        {/* Duration stepper */}
+        {(type === 'pump' || isBreast) && (
+          <div className="space-y-3">
+            <label className="text-caption-caps block pl-1">Duration</label>
+            <div className="premium-card flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => {
-                  triggerHaptic(5);
-                  setDurationMins(d => Math.max(1, d - 1));
-                }}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-200 border border-neutral-800 text-lg"
+                onClick={() => { triggerHaptic(5); setDurationMins(d => Math.max(1, d - 1)); }}
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-100 text-xl font-light active:scale-90 transition-transform cursor-pointer"
               >
-                -
+                −
               </button>
-              <span className="text-2xl font-light text-neutral-200">{durationMins} mins</span>
+              <span className="text-3xl font-light text-neutral-100 tabular-nums">{durationMins}<span className="text-lg text-neutral-500 ml-1">min</span></span>
               <button
                 type="button"
-                onClick={() => {
-                  triggerHaptic(5);
-                  setDurationMins(d => d + 1);
-                }}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-200 border border-neutral-800 text-lg"
+                onClick={() => { triggerHaptic(5); setDurationMins(d => d + 1); }}
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-neutral-900 text-neutral-100 text-xl font-light active:scale-90 transition-transform cursor-pointer"
               >
                 +
               </button>
@@ -178,27 +158,21 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
           </div>
         )}
 
-        {/* Notes input */}
-        <div className="space-y-2">
-          <label className="text-caption text-neutral-500 uppercase tracking-wider block">
-            Notes (optional)
-          </label>
+        {/* Notes */}
+        <div className="space-y-3">
+          <label className="text-caption-caps block pl-1">Notes (optional)</label>
           <input
             type="text"
-            placeholder="Add feeding details..."
+            placeholder="Add details..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full bg-neutral-900/40 border border-neutral-800 rounded-2xl px-4 py-3.5 text-body focus:outline-none focus:border-amber-500/50 transition-colors"
+            className="premium-input text-left"
           />
         </div>
 
         {/* Submit */}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full btn-primary block text-center mt-6 cursor-pointer"
-        >
-          {isLoading ? 'Saving Log...' : 'Save Feed Record'}
+        <button type="submit" disabled={isLoading} className="btn-primary mt-4">
+          {isLoading ? 'Saving...' : 'Save Record'}
         </button>
       </form>
     </div>

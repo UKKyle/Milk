@@ -42,52 +42,59 @@ export function WelcomeScreen() {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-center px-6 max-w-sm mx-auto w-full">
-      <div className="space-y-2 text-center mb-10">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-amber-500/10 text-amber-500 mb-4">
-          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+    <div className="safe-area-container max-w-sm mx-auto justify-between py-12">
+      {/* Spacer */}
+      <div />
+
+      {/* Hero Header */}
+      <div className="space-y-3 text-center my-auto">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-[24px] bg-amber-500/10 text-amber-500 mb-6">
+          <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <h1 className="text-title">Milk Tracker</h1>
-        <p className="text-caption">A calm, shared feeding space for you and your partner.</p>
+        <h1 className="text-title tracking-tight text-neutral-100">Milk Tracker</h1>
+        <p className="text-body text-neutral-400 max-w-[280px] mx-auto">
+          A calm, shared feeding space for you and your partner.
+        </p>
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <label className="text-caption block mb-2">Family Code</label>
+      {/* Auth Input Fields */}
+      <form onSubmit={handleLogin} className="space-y-8 w-full mt-auto">
+        <div className="space-y-5">
+          <div className="space-y-2">
+            <label className="text-caption-caps block pl-1">Family Code</label>
             <input
               type="text"
               required
-              placeholder="e.g. OURBABY"
+              placeholder="OURBABY"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl px-4 py-3.5 text-body focus:outline-none focus:border-amber-500/50 transition-colors uppercase tracking-wider text-center"
+              className="premium-input uppercase tracking-widest text-center"
             />
           </div>
 
-          <div>
-            <label className="text-caption block mb-2">Your Name</label>
+          <div className="space-y-2">
+            <label className="text-caption-caps block pl-1">Your Name</label>
             <input
               type="text"
               required
-              placeholder="Partner 1"
+              placeholder="Partner Name"
               value={partner}
               onChange={(e) => setPartner(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl px-4 py-3.5 text-body focus:outline-none focus:border-amber-500/50 transition-colors text-center"
+              className="premium-input text-center"
             />
           </div>
         </div>
 
         {error && (
-          <div className="text-red-400 text-caption text-center bg-red-950/20 py-2.5 px-3 rounded-xl border border-red-900/30">
+          <div className="text-red-400 text-caption text-center bg-red-950/20 py-3.5 px-4 rounded-2xl border border-red-900/30 animate-pulse">
             {error}
           </div>
         )}
 
-        <button type="submit" disabled={isLoading} className="w-full btn-primary block text-center">
-          {isLoading ? 'Setting up family space...' : 'Access family space'}
+        <button type="submit" disabled={isLoading} className="btn-primary">
+          {isLoading ? 'Setting up family...' : 'Access space'}
         </button>
       </form>
     </div>
