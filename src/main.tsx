@@ -7,8 +7,9 @@ import './index.css';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5, // 5 minutes fresh data stale limits
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      staleTime: 0,
     },
   },
 });

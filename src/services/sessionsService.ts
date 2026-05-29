@@ -44,7 +44,7 @@ export const sessionsService = {
   // Remote loading with offline caching backup
   async getSessions(familyId: string): Promise<Session[]> {
     if (!hasValidSupabaseConfig) {
-      return localDb.getLocalSessions();
+      return localDb.getLocalSessions(familyId);
     }
 
     try {
@@ -57,19 +57,17 @@ export const sessionsService = {
       if (error) throw error;
 
       if (data) {
-        // Sync cache: put all remote rows into local database
         const typedData = data as Session[];
         for (const item of typedData) {
           await localDb.saveLocalSession(item);
         }
-        // Return from local cache to include any pending offline items
-        return localDb.getLocalSessions();
+        return localDb.getLocalSessions(familyId);
       }
     } catch (e) {
       console.warn('Network read failed, falling back to local DB cache:', e);
     }
 
-    return localDb.getLocalSessions();
+    return localDb.getLocalSessions(familyId);
   },
 
   // Single abstraction layer for CRUD actions supporting queuing

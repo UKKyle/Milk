@@ -5,7 +5,7 @@ interface MilkTrackerDB extends DBSchema {
   sessions: {
     key: string;
     value: Session;
-    indexes: { 'by-started': string };
+    indexes: { 'by-started': string; 'by-family': string };
   };
   offlineQueue: {
     key: string;
@@ -19,7 +19,7 @@ interface MilkTrackerDB extends DBSchema {
 }
 
 const DB_NAME = 'milk_tracker_db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise: Promise<IDBPDatabase<MilkTrackerDB>> | null = null;
 
@@ -30,6 +30,7 @@ export function getDB() {
         // Sessions Cache Store
         const sessionsStore = db.createObjectStore('sessions', { keyPath: 'id' });
         sessionsStore.createIndex('by-started', 'started_at');
+        sessionsStore.createIndex('by-family', 'family_id');
 
         // Queue for Offline Mutations
         const queueStore = db.createObjectStore('offlineQueue', { keyPath: 'id' });
@@ -44,9 +45,11 @@ export function getDB() {
 }
 
 // Helper methods to interact with local DB stores
-export async function getLocalSessions(): Promise<Session[]> {
+export async function getLocalSessions(familyId?: string): Promise<Session[]> {
   const db = await getDB();
-  const sessions = await db.getAll('sessions');
+  const sessions = familyId
+    ? await db.getAllFromIndex('sessions', 'by-family', familyId)
+    : await db.getAll('sessions');
   return sessions.sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
 }
 

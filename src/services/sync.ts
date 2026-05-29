@@ -1,6 +1,6 @@
 import { supabase, hasValidSupabaseConfig } from './supabase';
 import * as localDb from './db';
-import { OfflineQueueItem } from '../types';
+import { Session } from '../types';
 
 let isProcessingQueue = false;
 
@@ -53,6 +53,15 @@ export async function processOfflineQueue(
         }
 
         if (error) throw error;
+
+        if (item.operation === 'delete') {
+          await localDb.deleteLocalSession(item.payload.id);
+        } else {
+          const savedSession = item.payload as Session;
+          if (savedSession.id) {
+            await localDb.saveLocalSession(savedSession);
+          }
+        }
 
         // Mutation succeeded! Purge from local offline queue
         await localDb.deleteQueueItem(item.id);

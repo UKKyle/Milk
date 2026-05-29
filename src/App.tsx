@@ -41,6 +41,7 @@ export function App() {
         if (familyId && hasValidSupabaseConfig) {
           const { sessionsService } = await import('./services/sessionsService');
           await sessionsService.bootstrapFamily(familyId);
+          await queryClient.invalidateQueries({ queryKey: ['sessions', familyId] });
         }
         processOfflineQueue((status) => {
           setSyncStatus(status);
@@ -58,7 +59,7 @@ export function App() {
       window.removeEventListener('online', updateOnlineStatus);
       window.removeEventListener('offline', updateOnlineStatus);
     };
-  }, [setSyncStatus, triggerHaptic]);
+  }, [familyId, queryClient, setSyncStatus, triggerHaptic]);
 
   // Periodic offline queue processor
   useEffect(() => {
