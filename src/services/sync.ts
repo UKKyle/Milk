@@ -24,7 +24,7 @@ export async function processOfflineQueue(
     let failedCount = 0;
 
     for (const item of queue) {
-      if (item.status === 'failed' && item.attempt_count >= 5) {
+      if (item.status === 'failed' && item.attempt_count >= 50) {
         failedCount++;
         continue; // Keep blocked item but warning visible, prevent blocking other entries
       }

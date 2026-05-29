@@ -33,11 +33,15 @@ export function App() {
 
   // Online / offline indicators and sync queue processing
   useEffect(() => {
-    const updateOnlineStatus = () => {
+    const updateOnlineStatus = async () => {
       const isOnline = navigator.onLine;
       setSyncStatus({ isOnline });
       if (isOnline) {
         triggerHaptic([10, 30]);
+        if (familyId && hasValidSupabaseConfig) {
+          const { sessionsService } = await import('./services/sessionsService');
+          await sessionsService.bootstrapFamily(familyId);
+        }
         processOfflineQueue((status) => {
           setSyncStatus(status);
         });

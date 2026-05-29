@@ -62,7 +62,8 @@ export const sessionsService = {
         for (const item of typedData) {
           await localDb.saveLocalSession(item);
         }
-        return typedData;
+        // Return from local cache to include any pending offline items
+        return localDb.getLocalSessions();
       }
     } catch (e) {
       console.warn('Network read failed, falling back to local DB cache:', e);
