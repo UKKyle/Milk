@@ -12,6 +12,12 @@ interface QuickAddProps {
 export function QuickAddScreen({ onBack }: QuickAddProps) {
   const [volume, setVolume] = useState<number>(80);
   const [notes, setNotes] = useState('');
+  const [startedAt, setStartedAt] = useState(() => {
+    // Return current local time formatted for datetime-local input (YYYY-MM-DDTHH:mm)
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const familyId = useAppStore((state) => state.familyId);
@@ -24,13 +30,15 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
     setIsLoading(true);
     triggerHaptic([15, 30]);
 
+    const sessionDate = new Date(startedAt).toISOString();
+
     const newSession = await sessionsService.createSession({
       id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now(),
       family_id: familyId!,
       type: 'bottle',
       side: null,
-      started_at: new Date().toISOString(),
-      ended_at: new Date().toISOString(),
+      started_at: sessionDate,
+      ended_at: sessionDate,
       duration_s: null,
       volume_ml: volume,
       notes: notes.trim() || null,
@@ -108,6 +116,21 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
               <button type="button" onClick={() => { triggerHaptic(5); setVolume((v) => v + 10); }} style={{ width: 44, height: 44, borderRadius: 22, background: 'var(--bg-base)', border: '0.5px solid var(--border-color)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                 <PlusIcon size={18} strokeWidth={1.5} />
               </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Time */}
+        <div style={{ marginBottom: 32 }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>Time</p>
+          <div className="ios-list-group" style={{ marginBottom: 0 }}>
+            <div className="ios-list-item" style={{ cursor: 'default' }}>
+              <input
+                type="datetime-local"
+                value={startedAt}
+                onChange={(e) => setStartedAt(e.target.value)}
+                style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: 17, color: 'var(--text-primary)', fontFamily: 'inherit' }}
+              />
             </div>
           </div>
         </div>
