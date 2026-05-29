@@ -13,10 +13,9 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
   const [volume, setVolume] = useState<number>(80);
   const [notes, setNotes] = useState('');
   const [startedAt, setStartedAt] = useState(() => {
-    // Return current local time formatted for datetime-local input (YYYY-MM-DDTHH:mm)
+    // Return current local time formatted for time input (HH:mm)
     const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
+    return now.toTimeString().slice(0, 5);
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,7 +29,11 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
     setIsLoading(true);
     triggerHaptic([15, 30]);
 
-    const sessionDate = new Date(startedAt).toISOString();
+    // Combine today's date with the selected time
+    const sessionDateObj = new Date();
+    const [hours, minutes] = startedAt.split(':').map(Number);
+    sessionDateObj.setHours(hours, minutes, 0, 0);
+    const sessionDate = sessionDateObj.toISOString();
 
     const newSession = await sessionsService.createSession({
       id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now(),
@@ -126,7 +129,7 @@ export function QuickAddScreen({ onBack }: QuickAddProps) {
           <div className="ios-list-group" style={{ marginBottom: 0 }}>
             <div className="ios-list-item" style={{ cursor: 'default' }}>
               <input
-                type="datetime-local"
+                type="time"
                 value={startedAt}
                 onChange={(e) => setStartedAt(e.target.value)}
                 style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: 17, color: 'var(--text-primary)', fontFamily: 'inherit' }}
