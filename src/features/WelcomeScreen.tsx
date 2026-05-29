@@ -42,62 +42,59 @@ export function WelcomeScreen() {
   };
 
   return (
-    <div className="safe-area-container max-w-sm mx-auto justify-between py-12">
+    <div className="safe-area-container max-w-sm mx-auto justify-between py-12 px-6">
       {/* Spacer */}
       <div />
 
-      {/* Hero Header */}
-      <div className="space-y-4 text-center my-auto">
-        <div className="relative inline-flex items-center justify-center w-24 h-24 mb-4">
-          {/* Soft glow background */}
-          <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-xl animate-pulse" />
-          {/* Main icon container */}
-          <div className="relative flex items-center justify-center w-20 h-20 rounded-[24px] bg-neutral-900 border border-neutral-800 shadow-2xl">
-            <span className="text-4xl filter drop-shadow-md">🍼</span>
-          </div>
+      {/* Hero Header - Ultra Minimal */}
+      <div className="space-y-6 text-center mt-12 mb-auto">
+        <svg className="w-12 h-12 mx-auto text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.5C16.1421 21.5 19.5 18.1421 19.5 14C19.5 9.85786 12 2.5 12 2.5C12 2.5 4.5 9.85786 4.5 14C4.5 18.1421 7.85786 21.5 12 21.5Z" />
+        </svg>
+        <div className="space-y-2">
+          <h1 className="text-[40px] leading-tight font-light tracking-tight text-neutral-50">
+            Milk
+          </h1>
+          <p className="text-body text-neutral-500 max-w-[240px] mx-auto font-light">
+            Your shared feeding space.
+          </p>
         </div>
-        <h1 className="text-title tracking-tight text-neutral-100">Milk Tracker</h1>
-        <p className="text-body text-neutral-400 max-w-[280px] mx-auto leading-relaxed">
-          A calm, shared feeding space for you and your partner.
-        </p>
       </div>
 
       {/* Auth Input Fields */}
-      <form onSubmit={handleLogin} className="space-y-8 w-full mt-auto">
-        <div className="space-y-5">
-          <div className="space-y-2">
-            <label className="text-caption-caps block pl-1">Family Code</label>
-            <input
-              type="text"
-              required
-              placeholder="OURBABY"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className="premium-input uppercase tracking-widest text-center"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-caption-caps block pl-1">Your Name</label>
-            <input
-              type="text"
-              required
-              placeholder="Partner Name"
-              value={partner}
-              onChange={(e) => setPartner(e.target.value)}
-              className="premium-input text-center"
-            />
-          </div>
+      <form onSubmit={handleLogin} className="space-y-6 w-full mb-8">
+        <div className="space-y-4">
+          <input
+            type="text"
+            required
+            placeholder="Family Code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            className="w-full h-14 bg-neutral-900 border-none rounded-2xl px-5 text-body text-neutral-100 placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-amber-500/50 transition-all uppercase tracking-widest text-center"
+          />
+          <input
+            type="text"
+            required
+            placeholder="Your Name"
+            value={partner}
+            onChange={(e) => setPartner(e.target.value)}
+            className="w-full h-14 bg-neutral-900 border-none rounded-2xl px-5 text-body text-neutral-100 placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-amber-500/50 transition-all text-center"
+          />
         </div>
 
         {error && (
-          <div className="text-red-400 text-caption text-center bg-red-950/20 py-3.5 px-4 rounded-2xl border border-red-900/30 animate-pulse">
+          <div className="text-red-400 text-caption text-center animate-pulse">
             {error}
           </div>
         )}
 
-        <button type="submit" disabled={isLoading} className="btn-primary">
-          {isLoading ? 'Setting up family...' : 'Access space'}
+        <button 
+          type="submit" 
+          disabled={isLoading} 
+          className="w-full h-14 bg-neutral-100 text-neutral-950 font-medium rounded-2xl active:scale-[0.98] transition-transform flex items-center justify-center text-body mt-8 disabled:opacity-50"
+        >
+          {isLoading ? 'Setting up...' : 'Continue'}
+
         </button>
       </form>
     </div>
