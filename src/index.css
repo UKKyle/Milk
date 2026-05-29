@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 13 13 13; /* #0d0d0d */
+    --foreground: 242 242 247;
+    --card: 28 28 30;
+    --card-foreground: 242 242 247;
+    --primary: 255 159 10; /* Soft Amber */
+    --primary-foreground: 13 13 13;
+    --accent: 142 142 147;
+    --border: 38 38 40;
+    
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+    color-scheme: dark;
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior-y: contain; /* Prevent browser bounce */
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+  }
+}
+
+/* Apple typography helpers */
+.text-timer {
+  font-size: 64px;
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.text-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.text-body {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.text-caption {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgb(var(--accent));
+}
+
+/* Dynamic design interactive cards */
+.premium-card {
+  background: rgba(28, 28, 30, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+}
+
+.premium-card:active {
+  transform: scale(0.98);
+  background: rgba(28, 28, 30, 0.8);
+}
+
+.btn-primary {
+  background-color: rgb(var(--primary));
+  color: rgb(var(--primary-foreground));
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 14px 24px;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgb(var(--foreground));
+  border-radius: 9999px;
+  padding: 14px 24px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Animate layout transitions gently */
+.fade-in-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.fade-in-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
