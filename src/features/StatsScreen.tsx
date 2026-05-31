@@ -96,17 +96,40 @@ export function StatsScreen() {
         minHeight: '100vh',
       }}
     >
-      <h1
+      <div
         style={{
-          fontSize: 34,
-          fontWeight: 600,
-          letterSpacing: '-0.02em',
-          color: 'var(--text-primary)',
+          background: 'var(--bg-surface)',
+          borderRadius: 18,
+          padding: '18px 20px',
           marginBottom: 24,
+          border: '1px solid var(--border-color)',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.10)',
         }}
       >
-        Stats
-      </h1>
+        <p
+          style={{
+            fontSize: 13,
+            fontWeight: 500,
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginBottom: 6,
+          }}
+        >
+          Insights
+        </p>
+        <h1
+          style={{
+            fontSize: 34,
+            fontWeight: 600,
+            letterSpacing: '-0.02em',
+            color: 'var(--text-primary)',
+            margin: 0,
+          }}
+        >
+          Stats
+        </h1>
+      </div>
 
       <div
         style={{

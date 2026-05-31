@@ -146,17 +146,40 @@ export function SettingsScreen({ onBack }: SettingsProps) {
       }}
     >
       {/* Large Title */}
-      <h1
+      <div
         style={{
-          fontSize: 34,
-          fontWeight: 600,
-          letterSpacing: '-0.02em',
-          color: 'var(--text-primary)',
+          background: 'var(--bg-surface)',
+          borderRadius: 18,
+          padding: '18px 20px',
           marginBottom: 24,
+          border: '1px solid var(--border-color)',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.10)',
         }}
       >
-        Settings
-      </h1>
+        <p
+          style={{
+            fontSize: 13,
+            fontWeight: 500,
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginBottom: 6,
+          }}
+        >
+          Preferences
+        </p>
+        <h1
+          style={{
+            fontSize: 34,
+            fontWeight: 600,
+            letterSpacing: '-0.02em',
+            color: 'var(--text-primary)',
+            margin: 0,
+          }}
+        >
+          Settings
+        </h1>
+      </div>
 
       {/* Account Section */}
       <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>

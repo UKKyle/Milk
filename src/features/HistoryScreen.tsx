@@ -69,20 +69,43 @@ export function HistoryScreen({ onBack }: HistoryProps) {
       }}
     >
       {/* Large Title */}
-      <h1
+      <div
         style={{
-          fontSize: 34,
-          fontWeight: 600,
-          letterSpacing: '-0.02em',
-          color: 'var(--text-primary)',
+          background: 'var(--bg-surface)',
+          borderRadius: 18,
+          padding: '18px 20px',
           marginBottom: 24,
+          border: '1px solid var(--border-color)',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.10)',
         }}
       >
-        History
-      </h1>
-      <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: -16, marginBottom: 20 }}>
-        Showing the last 30 days only.
-      </p>
+        <p
+          style={{
+            fontSize: 13,
+            fontWeight: 500,
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginBottom: 6,
+          }}
+        >
+          Archive
+        </p>
+        <h1
+          style={{
+            fontSize: 34,
+            fontWeight: 600,
+            letterSpacing: '-0.02em',
+            color: 'var(--text-primary)',
+            margin: 0,
+          }}
+        >
+          History
+        </h1>
+        <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 8 }}>
+          Showing the last 30 days only.
+        </p>
+      </div>
 
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 60 }}>
