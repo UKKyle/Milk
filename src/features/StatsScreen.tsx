@@ -115,18 +115,6 @@ export function StatsScreen() {
           marginBottom: 24,
         }}
       >
-        <p
-          style={{
-            fontSize: 13,
-            fontWeight: 500,
-            color: 'var(--text-secondary)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            marginBottom: 8,
-          }}
-        >
-          Last 7 Days
-        </p>
         <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 14 }}>
           {selectedDay ? selectedDayLabel : 'Tap a day below'}
         </p>

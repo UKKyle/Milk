@@ -16,17 +16,21 @@ export function SettingsScreen({ onBack }: SettingsProps) {
   const familyCode = useAppStore((state) => state.familyCode);
   const partnerName = useAppStore((state) => state.partnerName);
   const theme = useAppStore((state) => state.theme);
+  const backgroundImage = useAppStore((state) => state.backgroundImage);
   const setPartnerName = useAppStore((state) => state.setPartnerName);
   const setTheme = useAppStore((state) => state.setTheme);
+  const setBackgroundImage = useAppStore((state) => state.setBackgroundImage);
   const logout = useAppStore((state) => state.logout);
   const syncStatus = useAppStore((state) => state.syncStatus);
 
   const [nameInput, setNameInput] = useState(partnerName);
   const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [backgroundStatus, setBackgroundStatus] = useState<string | null>(null);
   const [isImporting, setIsImporting] = useState(false);
 
   const { triggerHaptic } = useHaptics();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const backgroundInputRef = useRef<HTMLInputElement>(null);
 
   const { data: sessions = [] } = useQuery({
     queryKey: ['sessions', familyId],
@@ -42,6 +46,42 @@ export function SettingsScreen({ onBack }: SettingsProps) {
   const handleThemeChange = (nextTheme: 'dark' | 'light') => {
     triggerHaptic(10);
     setTheme(nextTheme);
+  };
+
+  const handleBackgroundPick = () => {
+    triggerHaptic(5);
+    backgroundInputRef.current?.click();
+  };
+
+  const handleBackgroundChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setBackgroundStatus('Please upload an image file.');
+      return;
+    }
+
+    setBackgroundStatus('Applying background...');
+    triggerHaptic(10);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result !== 'string') {
+        setBackgroundStatus('Could not read that image.');
+        return;
+      }
+
+      setBackgroundImage(result);
+      setBackgroundStatus('Background updated.');
+      triggerHaptic([20, 40, 20]);
+    };
+    reader.onerror = () => {
+      setBackgroundStatus('Could not read that image.');
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleExportCSV = () => { triggerHaptic(15); exportToCSV(sessions, familyCode || 'family'); };
@@ -191,6 +231,40 @@ export function SettingsScreen({ onBack }: SettingsProps) {
               Light
             </button>
           </div>
+        </div>
+      </div>
+
+      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
+        Background
+      </p>
+      <div className="ios-list-group">
+        <input
+          ref={backgroundInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleBackgroundChange}
+          style={{ display: 'none' }}
+        />
+        <div className="ios-list-item" style={{ cursor: 'default', display: 'block' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
+            <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>App Background</span>
+            <span style={{ fontSize: 15, color: 'var(--text-secondary)', textAlign: 'right' }}>
+              {backgroundImage ? 'Image set' : 'No image'}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleBackgroundPick}
+            className="btn-secondary"
+            style={{ height: 44, padding: '0 16px', borderRadius: 12 }}
+          >
+            {backgroundImage ? 'Replace Background Image' : 'Upload Background Image'}
+          </button>
+          {backgroundStatus && (
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 10 }}>
+              {backgroundStatus}
+            </p>
+          )}
         </div>
       </div>
 
