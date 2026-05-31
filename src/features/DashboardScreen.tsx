@@ -53,6 +53,10 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
   const todaySessions = sessions.filter((s) => new Date(s.started_at) >= todayStart);
   const todayCount = todaySessions.length;
   const todayVolume = todaySessions.reduce((sum, s) => sum + (s.volume_ml || 0), 0);
+  const todayOunces = todayVolume / 29.5735;
+
+  const formatMl = (value: number) => `${value.toLocaleString()} ml`;
+  const formatOz = (value: number) => `${value.toLocaleString(undefined, { maximumFractionDigits: 1, minimumFractionDigits: 1 })} oz`;
 
   return (
     <div
@@ -128,37 +132,91 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
               }}
             />
           </div>
-        ) : todayCount > 0 ? (
-          <>
-            <p
-              style={{
-                fontSize: 44,
-                fontWeight: 200,
-                letterSpacing: '-0.02em',
-                color: 'var(--text-primary)',
-                lineHeight: 1.1,
-                marginBottom: 4,
-              }}
-            >
-              {todayVolume}<span style={{ fontSize: 20, fontWeight: 300, color: 'var(--text-secondary)' }}> ml</span>
-            </p>
-            <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
-              {todayCount} {todayCount === 1 ? 'feed' : 'feeds'} today
-              {lastFeed && ` · last ${getFeedTimeText(lastFeed.started_at).toLowerCase()}`}
-            </p>
-          </>
         ) : (
-          <p
+          <div
             style={{
-              fontSize: 20,
-              fontWeight: 300,
-              color: 'var(--text-tertiary)',
-              padding: '12px 0',
+              display: 'flex',
+              alignItems: 'stretch',
+              justifyContent: 'center',
+              background: 'var(--bg-surface-elevated)',
+              borderRadius: 16,
+              overflow: 'hidden',
+              border: '1px solid var(--border-color)',
+              marginTop: 8,
             }}
           >
-            No feeds today
-          </p>
+            <div style={{ flex: 1, textAlign: 'center', padding: '18px 12px 16px' }}>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: 'var(--text-secondary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: 6,
+                }}
+              >
+                ML
+              </p>
+              <p
+                style={{
+                  fontSize: 38,
+                  fontWeight: 200,
+                  letterSpacing: '-0.03em',
+                  color: 'var(--text-primary)',
+                  lineHeight: 1,
+                }}
+              >
+                {formatMl(todayVolume)}
+              </p>
+            </div>
+
+            <div
+              style={{
+                width: 1,
+                background: 'var(--border-color)',
+                margin: '16px 0',
+                opacity: 0.9,
+              }}
+            />
+
+            <div style={{ flex: 1, textAlign: 'center', padding: '18px 12px 16px' }}>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: 'var(--text-secondary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: 6,
+                }}
+              >
+                OZ
+              </p>
+              <p
+                style={{
+                  fontSize: 38,
+                  fontWeight: 200,
+                  letterSpacing: '-0.03em',
+                  color: 'var(--text-primary)',
+                  lineHeight: 1,
+                }}
+              >
+                {formatOz(todayOunces)}
+              </p>
+            </div>
+          </div>
         )}
+        <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 12 }}>
+          {todayCount > 0 ? (
+            <>
+              {todayCount} {todayCount === 1 ? 'feed' : 'feeds'} today
+              {lastFeed && ` · last ${getFeedTimeText(lastFeed.started_at).toLowerCase()}`}
+            </>
+          ) : (
+            'No feeds today'
+          )}
+        </p>
       </div>
 
       {/* Time Since Last Feed Card */}

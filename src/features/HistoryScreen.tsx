@@ -80,6 +80,9 @@ export function HistoryScreen({ onBack }: HistoryProps) {
       >
         History
       </h1>
+      <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: -16, marginBottom: 20 }}>
+        Showing the last 30 days only.
+      </p>
 
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 60 }}>

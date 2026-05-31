@@ -2,6 +2,31 @@ import { supabase, hasValidSupabaseConfig } from './supabase';
 import { Session, OfflineQueueItem } from '../types';
 import * as localDb from './db';
 
+const RETENTION_DAYS = 30;
+const RETENTION_MS = RETENTION_DAYS * 24 * 60 * 60 * 1000;
+
+function getRetentionCutoffIso(): string {
+  return new Date(Date.now() - RETENTION_MS).toISOString();
+}
+
+async function pruneRetainedSessions(familyId: string): Promise<void> {
+  const cutoffIso = getRetentionCutoffIso();
+
+  await localDb.deleteLocalSessionsBefore(familyId, cutoffIso);
+
+  if (!hasValidSupabaseConfig || !navigator.onLine) return;
+
+  const { error } = await supabase
+    .from('sessions')
+    .delete()
+    .eq('family_id', familyId)
+    .lt('started_at', cutoffIso);
+
+  if (error) {
+    console.warn('Failed to prune old family sessions:', error.message);
+  }
+}
+
 // Device identifier management
 export async function getOrCreateDeviceId(): Promise<string> {
   let deviceId = await localDb.getMetadata('device_id');
@@ -36,6 +61,8 @@ export const sessionsService = {
       if (error && error.code !== '23505') { // Ignore unique constraint violation
         console.warn('Family bootstrap warning:', error.message);
       }
+
+      await pruneRetainedSessions(familyId);
     } catch (e) {
       console.error('Failed to bootstrap family remote status:', e);
     }
@@ -43,7 +70,10 @@ export const sessionsService = {
 
   // Remote loading with offline caching backup
   async getSessions(familyId: string): Promise<Session[]> {
+    const cutoffIso = getRetentionCutoffIso();
+
     if (!hasValidSupabaseConfig) {
+      await localDb.deleteLocalSessionsBefore(familyId, cutoffIso);
       return localDb.getLocalSessions(familyId);
     }
 
@@ -52,6 +82,7 @@ export const sessionsService = {
         .from('sessions')
         .select('*')
         .eq('family_id', familyId)
+        .gte('started_at', cutoffIso)
         .order('started_at', { ascending: false });
 
       if (error) throw error;
@@ -61,12 +92,14 @@ export const sessionsService = {
         for (const item of typedData) {
           await localDb.saveLocalSession(item);
         }
+        await localDb.deleteLocalSessionsBefore(familyId, cutoffIso);
         return localDb.getLocalSessions(familyId);
       }
     } catch (e) {
       console.warn('Network read failed, falling back to local DB cache:', e);
     }
 
+    await localDb.deleteLocalSessionsBefore(familyId, cutoffIso);
     return localDb.getLocalSessions(familyId);
   },
 

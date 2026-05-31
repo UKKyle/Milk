@@ -53,6 +53,17 @@ export async function getLocalSessions(familyId?: string): Promise<Session[]> {
   return sessions.sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
 }
 
+export async function deleteLocalSessionsBefore(familyId: string, cutoffIso: string): Promise<void> {
+  const db = await getDB();
+  const sessions = await db.getAllFromIndex('sessions', 'by-family', familyId);
+
+  for (const session of sessions) {
+    if (session.started_at < cutoffIso) {
+      await db.delete('sessions', session.id);
+    }
+  }
+}
+
 export async function saveLocalSession(session: Session): Promise<void> {
   const db = await getDB();
   await db.put('sessions', session);
