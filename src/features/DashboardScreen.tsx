@@ -205,14 +205,7 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
           </div>
         )}
         <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 12 }}>
-          {todayCount > 0 ? (
-            <>
-              {todayCount} {todayCount === 1 ? 'feed' : 'feeds'} today
-              {lastFeed && ` · last ${getFeedTimeText(lastFeed.started_at).toLowerCase()}`}
-            </>
-          ) : (
-            'No feeds today'
-          )}
+          {todayCount > 0 ? `${todayCount} ${todayCount === 1 ? 'feed' : 'feeds'} today` : 'No feeds today'}
         </p>
       </div>
 
