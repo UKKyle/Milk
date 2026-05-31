@@ -31,7 +31,8 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
     if (mins < 1) return 'Just now';
     if (mins < 60) return `${mins}m ago`;
     const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
+    const remainingMins = mins % 60;
+    if (hours < 24) return `${hours}h ${remainingMins}m ago`;
     return new Date(startedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   };
 
