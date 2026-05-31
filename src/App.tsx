@@ -5,6 +5,7 @@ import { DashboardScreen } from './features/DashboardScreen';
 import { TimerScreen } from './features/TimerScreen';
 import { QuickAddScreen } from './features/QuickAddScreen';
 import { HistoryScreen } from './features/HistoryScreen';
+import { StatsScreen } from './features/StatsScreen';
 import { SettingsScreen } from './features/SettingsScreen';
 import { SessionRecoveryScreen } from './features/SessionRecoveryScreen';
 import { processOfflineQueue } from './services/sync';
@@ -16,11 +17,17 @@ import { Session } from './types';
 export function App() {
   const familyId = useAppStore((state) => state.familyId);
   const activeTimer = useAppStore((state) => state.activeTimer);
+  const theme = useAppStore((state) => state.theme);
   const setSyncStatus = useAppStore((state) => state.setSyncStatus);
 
-  const [currentScreen, setCurrentScreen] = useState<'dashboard' | 'timer' | 'quickadd' | 'history' | 'settings' | 'recovery'>('dashboard');
+  const [currentScreen, setCurrentScreen] = useState<'dashboard' | 'stats' | 'timer' | 'quickadd' | 'history' | 'settings' | 'recovery'>('dashboard');
   const { triggerHaptic } = useHaptics();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme === 'light' ? 'light' : 'dark';
+  }, [theme]);
 
   // Active recovery checks
   useEffect(() => {
@@ -158,11 +165,12 @@ export function App() {
 
       {/* Main Tab Content */}
       {currentScreen === 'dashboard' && <DashboardScreen onNavigate={(screen) => setCurrentScreen(screen as any)} />}
+      {currentScreen === 'stats' && <StatsScreen />}
       {currentScreen === 'history' && <HistoryScreen onBack={() => setCurrentScreen('dashboard')} />}
       {currentScreen === 'settings' && <SettingsScreen onBack={() => setCurrentScreen('dashboard')} />}
 
       {/* iOS Bottom Tab Bar */}
-      {['dashboard', 'history', 'settings'].includes(currentScreen) && (
+      {['dashboard', 'stats', 'history', 'settings'].includes(currentScreen) && (
         <div className="ios-bottom-tabs">
           <button 
             className={`ios-tab-item ${currentScreen === 'dashboard' ? 'active' : ''}`}
@@ -170,6 +178,14 @@ export function App() {
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={currentScreen === 'dashboard' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             Dashboard
+          </button>
+
+          <button 
+            className={`ios-tab-item ${currentScreen === 'stats' ? 'active' : ''}`}
+            onClick={() => setCurrentScreen('stats')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={currentScreen === 'stats' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chart-column"><path d="M3 3v18h18"/><rect x="7" y="13" width="3" height="5" rx="1"/><rect x="12" y="9" width="3" height="9" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg>
+            Stats
           </button>
           
           <button 

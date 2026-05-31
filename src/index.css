@@ -6,6 +6,7 @@
     --bg-base: #000000;          /* System Background */
     --bg-surface: #1C1C1E;       /* Secondary System Background (Elevated) */
     --bg-surface-elevated: #2C2C2E; /* Tertiary System Background */
+    --tab-bar-bg: rgba(28, 28, 30, 0.85);
     
     /* Text Colors */
     --text-primary: #FFFFFF;     /* Label */
@@ -27,6 +28,20 @@
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior: none;
+  }
+
+  :root[data-theme='light'] {
+    --bg-base: #F2F2F7;
+    --bg-surface: #FFFFFF;
+    --bg-surface-elevated: #E5E5EA;
+    --tab-bar-bg: rgba(255, 255, 255, 0.82);
+
+    --text-primary: #000000;
+    --text-secondary: rgba(60, 60, 67, 0.60);
+    --text-tertiary: rgba(60, 60, 67, 0.36);
+    --text-quaternary: rgba(60, 60, 67, 0.18);
+
+    --border-color: rgba(60, 60, 67, 0.18);
   }
 
   body {
@@ -160,7 +175,7 @@
 }
 
 .ios-bottom-tabs {
-  background-color: rgba(28, 28, 30, 0.85); /* Slightly lighter than pure black for depth */
+  background-color: var(--tab-bar-bg);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-top: 0.5px solid var(--border-color);

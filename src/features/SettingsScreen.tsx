@@ -15,7 +15,9 @@ export function SettingsScreen({ onBack }: SettingsProps) {
   const familyId = useAppStore((state) => state.familyId);
   const familyCode = useAppStore((state) => state.familyCode);
   const partnerName = useAppStore((state) => state.partnerName);
+  const theme = useAppStore((state) => state.theme);
   const setPartnerName = useAppStore((state) => state.setPartnerName);
+  const setTheme = useAppStore((state) => state.setTheme);
   const logout = useAppStore((state) => state.logout);
   const syncStatus = useAppStore((state) => state.syncStatus);
 
@@ -35,6 +37,11 @@ export function SettingsScreen({ onBack }: SettingsProps) {
   const handleSaveName = () => {
     triggerHaptic(10);
     setPartnerName(nameInput.trim() || 'Partner 1');
+  };
+
+  const handleThemeChange = (nextTheme: 'dark' | 'light') => {
+    triggerHaptic(10);
+    setTheme(nextTheme);
   };
 
   const handleExportCSV = () => { triggerHaptic(15); exportToCSV(sessions, familyCode || 'family'); };
@@ -151,6 +158,39 @@ export function SettingsScreen({ onBack }: SettingsProps) {
               textAlign: 'right',
             }}
           />
+        </div>
+      </div>
+
+      {/* Appearance Section */}
+      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
+        Appearance
+      </p>
+      <div className="ios-list-group">
+        <div className="ios-list-item" style={{ cursor: 'default', display: 'block' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>Theme</span>
+            <span style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
+              {theme === 'dark' ? 'Dark' : 'Light'}
+            </span>
+          </div>
+          <div className="pill-selector">
+            <button
+              type="button"
+              className={`pill-option ${theme === 'dark' ? 'pill-option-active' : ''}`}
+              onClick={() => handleThemeChange('dark')}
+              aria-pressed={theme === 'dark'}
+            >
+              Dark
+            </button>
+            <button
+              type="button"
+              className={`pill-option ${theme === 'light' ? 'pill-option-active' : ''}`}
+              onClick={() => handleThemeChange('light')}
+              aria-pressed={theme === 'light'}
+            >
+              Light
+            </button>
+          </div>
         </div>
       </div>
 
