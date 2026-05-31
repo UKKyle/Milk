@@ -138,14 +138,11 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
               display: 'flex',
               alignItems: 'stretch',
               justifyContent: 'center',
-              background: 'var(--bg-surface-elevated)',
-              borderRadius: 16,
-              overflow: 'hidden',
-              border: '1px solid var(--border-color)',
+              gap: 0,
               marginTop: 8,
             }}
           >
-            <div style={{ flex: 1, textAlign: 'center', padding: '18px 12px 16px' }}>
+            <div style={{ flex: 1, textAlign: 'center', padding: '10px 12px 8px' }}>
               <p
                 style={{
                   fontSize: 13,
@@ -175,12 +172,12 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
               style={{
                 width: 1,
                 background: 'var(--border-color)',
-                margin: '16px 0',
+                margin: '12px 0',
                 opacity: 0.9,
               }}
             />
 
-            <div style={{ flex: 1, textAlign: 'center', padding: '18px 12px 16px' }}>
+            <div style={{ flex: 1, textAlign: 'center', padding: '10px 12px 8px' }}>
               <p
                 style={{
                   fontSize: 13,
