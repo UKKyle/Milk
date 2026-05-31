@@ -18,6 +18,7 @@ export function App() {
   const familyId = useAppStore((state) => state.familyId);
   const activeTimer = useAppStore((state) => state.activeTimer);
   const theme = useAppStore((state) => state.theme);
+  const accentScheme = useAppStore((state) => state.accentScheme);
   const backgroundImage = useAppStore((state) => state.backgroundImage);
   const setSyncStatus = useAppStore((state) => state.setSyncStatus);
 
@@ -27,8 +28,9 @@ export function App() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.accentScheme = accentScheme;
     document.documentElement.style.colorScheme = theme === 'light' ? 'light' : 'dark';
-  }, [theme]);
+  }, [accentScheme, theme]);
 
   // Active recovery checks
   useEffect(() => {

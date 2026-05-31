@@ -16,9 +16,11 @@ export function SettingsScreen({ onBack }: SettingsProps) {
   const familyCode = useAppStore((state) => state.familyCode);
   const partnerName = useAppStore((state) => state.partnerName);
   const theme = useAppStore((state) => state.theme);
+  const accentScheme = useAppStore((state) => state.accentScheme);
   const backgroundImage = useAppStore((state) => state.backgroundImage);
   const setPartnerName = useAppStore((state) => state.setPartnerName);
   const setTheme = useAppStore((state) => state.setTheme);
+  const setAccentScheme = useAppStore((state) => state.setAccentScheme);
   const setBackgroundImage = useAppStore((state) => state.setBackgroundImage);
   const logout = useAppStore((state) => state.logout);
   const syncStatus = useAppStore((state) => state.syncStatus);
@@ -46,6 +48,11 @@ export function SettingsScreen({ onBack }: SettingsProps) {
   const handleThemeChange = (nextTheme: 'dark' | 'light') => {
     triggerHaptic(10);
     setTheme(nextTheme);
+  };
+
+  const handleAccentChange = (nextScheme: 'sunrise' | 'ocean' | 'plum' | 'forest') => {
+    triggerHaptic(10);
+    setAccentScheme(nextScheme);
   };
 
   const handleBackgroundPick = () => {
@@ -229,6 +236,54 @@ export function SettingsScreen({ onBack }: SettingsProps) {
               aria-pressed={theme === 'light'}
             >
               Light
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
+        Color Scheme
+      </p>
+      <div className="ios-list-group">
+        <div className="ios-list-item" style={{ cursor: 'default', display: 'block' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>Accent Palette</span>
+            <span style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
+              {accentScheme.charAt(0).toUpperCase() + accentScheme.slice(1)}
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 4, background: 'var(--bg-surface-elevated)', padding: 2, borderRadius: 8 }}>
+            <button
+              type="button"
+              className={`pill-option ${accentScheme === 'sunrise' ? 'pill-option-active' : ''}`}
+              onClick={() => handleAccentChange('sunrise')}
+              aria-pressed={accentScheme === 'sunrise'}
+            >
+              Sunrise
+            </button>
+            <button
+              type="button"
+              className={`pill-option ${accentScheme === 'ocean' ? 'pill-option-active' : ''}`}
+              onClick={() => handleAccentChange('ocean')}
+              aria-pressed={accentScheme === 'ocean'}
+            >
+              Ocean
+            </button>
+            <button
+              type="button"
+              className={`pill-option ${accentScheme === 'plum' ? 'pill-option-active' : ''}`}
+              onClick={() => handleAccentChange('plum')}
+              aria-pressed={accentScheme === 'plum'}
+            >
+              Plum
+            </button>
+            <button
+              type="button"
+              className={`pill-option ${accentScheme === 'forest' ? 'pill-option-active' : ''}`}
+              onClick={() => handleAccentChange('forest')}
+              aria-pressed={accentScheme === 'forest'}
+            >
+              Forest
             </button>
           </div>
         </div>

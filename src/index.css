@@ -30,6 +30,26 @@
     overscroll-behavior: none;
   }
 
+  :root[data-accent-scheme='sunrise'] {
+    --accent-orange: #FF9F0A;
+    --accent-blue: #0A84FF;
+  }
+
+  :root[data-accent-scheme='ocean'] {
+    --accent-orange: #64D2FF;
+    --accent-blue: #5E5CE6;
+  }
+
+  :root[data-accent-scheme='plum'] {
+    --accent-orange: #BF5AF2;
+    --accent-blue: #FF2D55;
+  }
+
+  :root[data-accent-scheme='forest'] {
+    --accent-orange: #32D74B;
+    --accent-blue: #30B0C7;
+  }
+
   :root[data-theme='light'] {
     --bg-base: #F2F2F7;
     --bg-surface: #FFFFFF;

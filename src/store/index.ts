@@ -13,6 +13,7 @@ interface AppStore {
   familyCode: string | null;
   partnerName: string;
   theme: 'dark' | 'light';
+  accentScheme: 'sunrise' | 'ocean' | 'plum' | 'forest';
   backgroundImage: string | null;
   syncStatus: {
     isOnline: boolean;
@@ -25,6 +26,7 @@ interface AppStore {
   setFamily: (code: string, id: string) => void;
   setPartnerName: (name: string) => void;
   setTheme: (theme: 'dark' | 'light') => void;
+  setAccentScheme: (scheme: AppStore['accentScheme']) => void;
   setBackgroundImage: (image: string | null) => void;
   setSyncStatus: (status: Partial<AppStore['syncStatus']>) => void;
   startTimer: (side: 'left' | 'right') => void;
@@ -41,6 +43,7 @@ export const useAppStore = create<AppStore>()(
       familyCode: null,
       partnerName: 'Partner 1',
       theme: 'dark',
+      accentScheme: 'sunrise',
       backgroundImage: null,
       syncStatus: {
         isOnline: navigator.onLine,
@@ -52,6 +55,7 @@ export const useAppStore = create<AppStore>()(
       setFamily: (code, id) => set({ familyCode: code, familyId: id }),
       setPartnerName: (name) => set({ partnerName: name }),
       setTheme: (theme) => set({ theme }),
+      setAccentScheme: (accentScheme) => set({ accentScheme }),
       setBackgroundImage: (backgroundImage) => set({ backgroundImage }),
       setSyncStatus: (status) =>
         set((state) => ({ syncStatus: { ...state.syncStatus, ...status } })),
@@ -100,6 +104,7 @@ export const useAppStore = create<AppStore>()(
         familyCode: state.familyCode,
         partnerName: state.partnerName,
         theme: state.theme,
+        accentScheme: state.accentScheme,
         backgroundImage: state.backgroundImage,
         activeTimer: state.activeTimer,
       }),

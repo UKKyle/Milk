@@ -72,6 +72,7 @@ export function StatsScreen() {
 
   const maxValue = Math.max(1, ...chartDays.map((day) => day.value));
   const weekTotal = chartDays.reduce((sum, day) => sum + day.value, 0);
+  const weekTotalOz = weekTotal / 29.5735;
 
   useEffect(() => {
     if (selectedDayKey && chartDays.some((day) => day.key === selectedDayKey)) return;
@@ -115,8 +116,8 @@ export function StatsScreen() {
           marginBottom: 24,
         }}
       >
-        <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 14 }}>
-          {selectedDay ? selectedDayLabel : 'Tap a day below'}
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+          Week Total
         </p>
         <div style={{ display: 'flex', alignItems: 'stretch', gap: 0 }}>
           <div style={{ flex: 1, textAlign: 'center' }}>
@@ -124,7 +125,7 @@ export function StatsScreen() {
               ML
             </p>
             <p style={{ fontSize: 34, fontWeight: 200, letterSpacing: '-0.03em', color: 'var(--text-primary)', lineHeight: 1 }}>
-              {formatMl(selectedDayValue)}
+              {formatMl(weekTotal)}
             </p>
           </div>
           <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 0' }} />
@@ -133,12 +134,12 @@ export function StatsScreen() {
               OZ
             </p>
             <p style={{ fontSize: 34, fontWeight: 200, letterSpacing: '-0.03em', color: 'var(--text-primary)', lineHeight: 1 }}>
-              {formatOz(selectedDayOz)}
+              {formatOz(weekTotalOz)}
             </p>
           </div>
         </div>
         <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 14 }}>
-          Week total: {formatMl(weekTotal)}
+          {selectedDay ? `${selectedDayLabel} • ${formatMl(selectedDayValue)} | ${formatOz(selectedDayOz)}` : 'Tap a bar below to inspect a day'}
         </p>
       </div>
 
