@@ -30,20 +30,6 @@ export function HistoryScreen({ onBack }: HistoryProps) {
     }
   };
 
-  const groupSessionsByDay = (list: Session[]) => {
-    const groups: { [key: string]: Session[] } = {};
-    list.forEach((s) => {
-      const dateStr = new Date(s.started_at).toLocaleDateString(undefined, {
-        weekday: 'long',
-        month: 'short',
-        day: 'numeric',
-      });
-      if (!groups[dateStr]) groups[dateStr] = [];
-      groups[dateStr].push(s);
-    });
-    return Object.entries(groups);
-  };
-
   const getSideLabel = (s: Session) => {
     if (s.type === 'bottle') return 'Bottle';
     if (s.type === 'pump') return 'Pump';
@@ -55,8 +41,6 @@ export function HistoryScreen({ onBack }: HistoryProps) {
     if (s.duration_s) return `${Math.floor(s.duration_s / 60)} min`;
     return '';
   };
-
-  const dayGroups = groupSessionsByDay(sessions);
 
   return (
     <div
@@ -120,7 +104,7 @@ export function HistoryScreen({ onBack }: HistoryProps) {
             }}
           />
         </div>
-      ) : dayGroups.length === 0 ? (
+      ) : sessions.length === 0 ? (
         <div style={{ textAlign: 'center', paddingTop: 60 }}>
           <p style={{ fontSize: 17, color: 'var(--text-secondary)' }}>No records yet</p>
           <p style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 4 }}>
@@ -128,60 +112,50 @@ export function HistoryScreen({ onBack }: HistoryProps) {
           </p>
         </div>
       ) : (
-        dayGroups.map(([day, items]) => (
-          <div key={day}>
-            <p
-              style={{
-                fontSize: 13,
-                fontWeight: 500,
-                color: 'var(--text-secondary)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                padding: '0 16px 8px',
-              }}
-            >
-              {day}
-            </p>
-            <div className="ios-list-group">
-              {items.map((session) => (
-                <div className="ios-list-item" key={session.id} style={{ cursor: 'default' }}>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: 17, color: 'var(--text-primary)', fontWeight: 400 }}>
-                      {getSideLabel(session)}
-                    </p>
-                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>
-                      {new Date(session.started_at).toLocaleTimeString(undefined, {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                      })}
-                      {session.recorded_by && ` · ${session.recorded_by}`}
-                      {session.notes && ` — "${session.notes}"`}
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontSize: 17, color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
-                      {getDetail(session)}
-                    </span>
-                    <button
-                      onClick={() => handleDelete(session.id)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: 'var(--accent-red)',
-                        cursor: 'pointer',
-                        padding: 4,
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Trash2 size={18} strokeWidth={1.5} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+        <div className="ios-list-group">
+          {sessions.map((session) => (
+            <div className="ios-list-item" key={session.id} style={{ cursor: 'default' }}>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 17, color: 'var(--text-primary)', fontWeight: 400 }}>
+                  {getSideLabel(session)}
+                </p>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>
+                  {new Date(session.started_at).toLocaleDateString(undefined, {
+                    weekday: 'long',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                  {' · '}
+                  {new Date(session.started_at).toLocaleTimeString(undefined, {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  })}
+                  {session.recorded_by && ` · ${session.recorded_by}`}
+                  {session.notes && ` — "${session.notes}"`}
+                </p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 17, color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
+                  {getDetail(session)}
+                </span>
+                <button
+                  onClick={() => handleDelete(session.id)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--accent-red)',
+                    cursor: 'pointer',
+                    padding: 4,
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Trash2 size={18} strokeWidth={1.5} />
+                </button>
+              </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
     </div>
   );

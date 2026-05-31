@@ -181,10 +181,6 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         </h1>
       </div>
 
-      {/* Account Section */}
-      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
-        Account
-      </p>
       <div className="ios-list-group">
         <div className="ios-list-item" style={{ cursor: 'default' }}>
           <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>Family Code</span>
@@ -205,10 +201,6 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         )}
       </div>
 
-      {/* Profile Section */}
-      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
-        Profile
-      </p>
       <div className="ios-list-group">
         <div className="ios-list-item" style={{ cursor: 'default', gap: 12 }}>
           <span style={{ fontSize: 17, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>Name</span>
@@ -231,10 +223,6 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         </div>
       </div>
 
-      {/* Appearance Section */}
-      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
-        Appearance
-      </p>
       <div className="ios-list-group">
         <div className="ios-list-item" style={{ cursor: 'default', display: 'block' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -264,9 +252,6 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         </div>
       </div>
 
-      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
-        Color Scheme
-      </p>
       <div className="ios-list-group">
         <div className="ios-list-item" style={{ cursor: 'default', display: 'block' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -312,9 +297,6 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         </div>
       </div>
 
-      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
-        Background
-      </p>
       <div className="ios-list-group">
         <input
           ref={backgroundInputRef}
@@ -346,10 +328,6 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         </div>
       </div>
 
-      {/* Data Section */}
-      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
-        Data & Backup
-      </p>
       <div className="ios-list-group">
         <div className="ios-list-item" onClick={handleExportCSV}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -382,10 +360,6 @@ export function SettingsScreen({ onBack }: SettingsProps) {
         </p>
       )}
 
-      {/* Danger Zone */}
-      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 16px 8px' }}>
-        Danger Zone
-      </p>
       <div className="ios-list-group">
         <div className="ios-list-item" onClick={handleClearCache}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

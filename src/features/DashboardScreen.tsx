@@ -305,19 +305,6 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
         </button>
       </div>
 
-      {/* Today's Summary */}
-      <p
-        style={{
-          fontSize: 13,
-          fontWeight: 500,
-          color: 'var(--text-secondary)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          padding: '0 16px 8px',
-        }}
-      >
-        Today's Summary
-      </p>
       <div className="ios-list-group">
         <div className="ios-list-item" style={{ cursor: 'default' }}>
           <span style={{ fontSize: 17, color: 'var(--text-primary)' }}>Total Feeds</span>
@@ -331,55 +318,40 @@ export function DashboardScreen({ onNavigate }: DashboardProps) {
         )}
       </div>
 
-      {/* Recent Feeds */}
       {sessions.length > 0 && (
-        <>
-          <p
-            style={{
-              fontSize: 13,
-              fontWeight: 500,
-              color: 'var(--text-secondary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              padding: '0 16px 8px',
-            }}
-          >
-            Recent
-          </p>
-          <div className="ios-list-group">
-            {sessions.slice(0, 4).map((session) => (
-              <div className="ios-list-item" key={session.id} style={{ cursor: 'default' }}>
-                <div>
-                  <p style={{ fontSize: 17, color: 'var(--text-primary)', fontWeight: 400 }}>
-                    {getSideLabel(session)}
-                  </p>
-                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>
-                    {new Date(session.started_at).toLocaleTimeString(undefined, {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                    })}
-                    {session.recorded_by && ` · ${session.recorded_by}`}
-                  </p>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 17, color: 'var(--text-secondary)' }}>
-                    {getDetail(session)}
-                  </span>
-                </div>
+        <div className="ios-list-group">
+          {sessions.slice(0, 4).map((session) => (
+            <div className="ios-list-item" key={session.id} style={{ cursor: 'default' }}>
+              <div>
+                <p style={{ fontSize: 17, color: 'var(--text-primary)', fontWeight: 400 }}>
+                  {getSideLabel(session)}
+                </p>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>
+                  {new Date(session.started_at).toLocaleTimeString(undefined, {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  })}
+                  {session.recorded_by && ` · ${session.recorded_by}`}
+                </p>
               </div>
-            ))}
-            <div
-              className="ios-list-item"
-              onClick={() => { triggerHaptic(5); onNavigate('history'); }}
-              style={{ justifyContent: 'center', gap: 4 }}
-            >
-              <span style={{ fontSize: 15, color: 'var(--accent-orange)', fontWeight: 500 }}>
-                View All History
-              </span>
-              <ChevronRight size={16} color="var(--accent-orange)" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 17, color: 'var(--text-secondary)' }}>
+                  {getDetail(session)}
+                </span>
+              </div>
             </div>
+          ))}
+          <div
+            className="ios-list-item"
+            onClick={() => { triggerHaptic(5); onNavigate('history'); }}
+            style={{ justifyContent: 'center', gap: 4 }}
+          >
+            <span style={{ fontSize: 15, color: 'var(--accent-orange)', fontWeight: 500 }}>
+              View All History
+            </span>
+            <ChevronRight size={16} color="var(--accent-orange)" />
           </div>
-        </>
+        </div>
       )}
     </div>
   );
