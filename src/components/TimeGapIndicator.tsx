@@ -9,20 +9,15 @@ export function TimeGapIndicator({ milliseconds }: TimeGapProps) {
 
   useEffect(() => {
     const formatTime = (ms: number): string => {
-      const seconds = Math.floor(ms / 1000);
-      const minutes = Math.floor(seconds / 60);
-      const hours = Math.floor(minutes / 60);
-      
-      if (hours > 0 && minutes > 0) {
-        return `${hours} Hrs ${minutes % 60} Mins`;
-      } else if (hours > 0) {
-        return `${hours} Hrs`;
-      } else if (minutes > 0) {
-        return `${minutes} Mins`;
-      } else {
-        const secs = seconds;
-        return secs > 0 ? `${secs} Secs` : '< 1 Min';
+      const totalMinutes = Math.floor(ms / 1000 / 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      // Always show "X Hrs X Mins" format
+      if (hours > 0) {
+        return `${hours} Hrs ${minutes} Mins`;
       }
+      return `${minutes} Mins`;
     };
 
     setDisplayTime(formatTime(milliseconds));

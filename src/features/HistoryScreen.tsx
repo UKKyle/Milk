@@ -164,9 +164,11 @@ export function HistoryScreen({ onBack }: HistoryProps) {
                           padding: 4,
                           display: 'flex',
                           alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: '6px',
                         }}
                       >
-                        <Trash2 size={18} strokeWidth={1.5} />
+                        <Trash2 size={18} />
                       </button>
                     </div>
                   </div>
