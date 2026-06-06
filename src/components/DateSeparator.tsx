@@ -46,7 +46,7 @@ export function DateSeparator({ date }: DateSeparatorProps) {
         style={{
           flex: 1,
           height: '1px',
-          background: 'var(--border-color-light)',
+          background: 'var(--border-color)',
         }}
       />
       <div
@@ -62,7 +62,7 @@ export function DateSeparator({ date }: DateSeparatorProps) {
           style={{
             fontSize: '12px',
             fontWeight: 500,
-            color: 'var(--text-secondary)',
+            color: 'var(--accent-orange)',
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
           }}
@@ -74,7 +74,7 @@ export function DateSeparator({ date }: DateSeparatorProps) {
         style={{
           flex: 1,
           height: '1px',
-          background: 'var(--border-color-light)',
+          background: 'var(--border-color)',
         }}
       />
     </div>

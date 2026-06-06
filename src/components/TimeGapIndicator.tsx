@@ -56,7 +56,7 @@ export function TimeGapIndicator({ milliseconds }: TimeGapProps) {
           style={{
             fontSize: '11px',
             fontWeight: 500,
-            color: 'var(--text-secondary)',
+            color: 'var(--accent-orange)',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
           }}
@@ -67,7 +67,7 @@ export function TimeGapIndicator({ milliseconds }: TimeGapProps) {
           style={{
             fontSize: '11px',
             fontWeight: 500,
-            color: 'var(--text-tertiary)',
+            color: 'var(--accent-orange)',
             fontVariantNumeric: 'tabular-nums',
           }}
         >
