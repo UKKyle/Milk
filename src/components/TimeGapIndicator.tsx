@@ -37,7 +37,7 @@ export function TimeGapIndicator({ milliseconds }: TimeGapProps) {
         style={{
           flex: 1,
           height: '1px',
-          background: 'var(--border-color-light)',
+          background: 'var(--border-color)',
           minWidth: '40px',
         }}
       />
@@ -78,7 +78,7 @@ export function TimeGapIndicator({ milliseconds }: TimeGapProps) {
         style={{
           flex: 1,
           height: '1px',
-          background: 'var(--border-color-light)',
+          background: 'var(--border-color)',
           minWidth: '40px',
         }}
       />

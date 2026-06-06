@@ -22,7 +22,7 @@ export function groupSessionsByDay(sessions: Session[]): { dateKey: string; date
 }
 
 export function calculateTimeGap(start: Date, end: Date): number {
-  return end.getTime() - start.getTime();
+  return Math.abs(end.getTime() - start.getTime());
 }
 
 export function formatDate(date: Date): string {

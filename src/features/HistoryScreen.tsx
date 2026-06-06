@@ -133,6 +133,7 @@ export function HistoryScreen({ onBack }: HistoryProps) {
               <DateSeparator date={dayGroup.date} />
               
               {/* Sessions for this day */}
+              <div className="ios-list-group">
               {dayGroup.sessions.map((session, sessionIndex) => (
                 <div key={session.id}>
                   {/* Session Item */}
@@ -184,6 +185,7 @@ export function HistoryScreen({ onBack }: HistoryProps) {
                   )}
                 </div>
               ))}
+              </div>
             </div>
           ))}
         </div>
